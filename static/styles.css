@@ -552,3 +552,33 @@ footer nav a:hover {
   background: linear-gradient(180deg, #ffffff, #f3f4f6);
   margin-bottom: 10px;
 }
+/* ===== FIX: texto visible en botones (carrito/checkout/móvil) ===== */
+
+/* Botones generales */
+button,
+input[type="submit"],
+input[type="button"]{
+  color: var(--text) !important;
+}
+
+/* Si usas <a> como botón */
+a.btn,
+a.button,
+a[role="button"]{
+  color: var(--text) !important;
+}
+
+/* Tus botones del catálogo viejo */
+.breakfast-grid article button{
+  color: var(--text) !important;
+}
+
+/* Tus botones reutilizables */
+.btn{
+  color: var(--text) !important;   /* <- ESTA ES LA CLAVE */
+}
+
+/* Botón primario verde (sí debe ir blanco) */
+.btn-primary{
+  color: #fff !important;
+}
