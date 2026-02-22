@@ -1,0 +1,126 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Checkout - Bolis Naturales</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="titulo-marca">Checkout</h1>
+        <nav class="nav">
+          <a href="{% url 'catalogo' %}">Seguir comprando</a>
+          <a href="{% url 'cart_detail' %}">Carrito</a>
+        </nav>
+      </header>
+
+      <main style="padding: 16px">
+        <!-- DEBUG visual (para confirmar que sí llegaron variables) -->
+        <p style="opacity: 0.7; font-size: 14px">
+          Items: {{ items|length }} — Subtotal: ${{ subtotal }} — Envío: ${{
+          envio }} — Total: ${{ total }}
+        </p>
+
+        {% if error %}
+        <p style="font-weight: 800; color: #b91c1c">{{ error }}</p>
+        {% endif %}
+
+        <h2>Tu pedido</h2>
+
+        {% if items %}
+        <div class="breakfast-grid" style="grid-template-columns: 1fr">
+          {% for it in items %}
+          <article>
+            <h3>{{ it.producto.nombre }}</h3>
+            <p>Cantidad: <strong>{{ it.qty }}</strong></p>
+            <p>Subtotal: <strong>${{ it.subtotal }}</strong></p>
+          </article>
+          {% endfor %}
+        </div>
+
+        <hr />
+        <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
+        <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
+        <p><strong>Total:</strong> ${{ total }}</p>
+
+        <hr />
+        <h2>Datos para tu orden</h2>
+
+        <p>
+          <strong>Horarios:</strong><br />
+          {{ horarios.lv }}<br />
+          {{ horarios.sd }}
+        </p>
+
+        <form method="post">
+          {% csrf_token %}
+
+          <label>Nombre</label><br />
+          <input
+            name="nombre"
+            required
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
+          />
+
+          <label>Teléfono</label><br />
+          <input
+            name="telefono"
+            required
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
+          />
+
+          <label>Dirección de envío</label><br />
+          <input
+            name="direccion"
+            required
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
+          />
+
+          <label>Mensaje (opcional)</label><br />
+          <textarea
+            name="mensaje"
+            rows="3"
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
+          ></textarea>
+
+          <button type="submit" style="margin-top: 12px">
+            Confirmar pedido
+          </button>
+        </form>
+
+        {% else %}
+        <p>No hay productos en tu carrito.</p>
+        <a href="{% url 'catalogo' %}">Volver al catálogo</a>
+        {% endif %}
+      </main>
+    </div>
+  </body>
+</html>

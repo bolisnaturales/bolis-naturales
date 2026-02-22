@@ -1,0 +1,67 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Estado del pedido - Bolis Naturales</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="titulo-marca">PEDIDO #{{ pedido.id }}</h1>
+
+        <nav class="nav">
+          <a href="{% url 'catalogo' %}">Catálogo</a>
+          <a href="{% url 'cart_detail' %}">Carrito</a>
+        </nav>
+      </header>
+
+      <main style="padding: 16px">
+        <section class="section">
+          <h2 class="section-title">Resumen</h2>
+
+          <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+          <p><strong>Nombre:</strong> {{ pedido.nombre }}</p>
+          <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+          <p><strong>Dirección:</strong> {{ pedido.direccion_envio }}</p>
+
+          {% if pedido.mensaje %}
+          <p><strong>Mensaje:</strong> {{ pedido.mensaje }}</p>
+          {% endif %}
+        </section>
+
+        <hr />
+
+        <section class="section">
+          <h2 class="section-title">Productos</h2>
+
+          {% if items %}
+          <ul style="margin: 0; padding-left: 18px">
+            {% for it in items %}
+            <li style="margin: 10px 0">
+              <strong>{{ it.nombre_producto }}</strong>
+              — {{ it.cantidad }} × ${{ it.precio_unitario }} =
+              <strong>${{ it.subtotal }}</strong>
+            </li>
+            {% endfor %}
+          </ul>
+          {% else %}
+          <p>No hay productos en este pedido.</p>
+          {% endif %}
+        </section>
+
+        <hr />
+
+        <section class="section">
+          <h2 class="section-title">Totales</h2>
+          <p><strong>Subtotal:</strong> ${{ pedido.subtotal }}</p>
+          <p><strong>Envío:</strong> ${{ pedido.envio }}</p>
+          <p><strong>Total:</strong> ${{ pedido.total }}</p>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

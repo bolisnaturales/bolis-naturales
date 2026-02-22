@@ -1,0 +1,116 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Bolis Naturales</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="titulo-marca">Bolis Naturales</h1>
+        <nav class="nav">
+          <a href="#bolis-agua-titulo">Bolis de agua</a>
+          <a href="#bolis-leche-titulo">Bolis de leche</a>
+          <a href="{% url 'cart_detail' %}">Carrito</a>
+        </nav>
+      </header>
+
+      <main>
+        <!-- ===================== -->
+        <!-- Bolis de agua -->
+        <!-- ===================== -->
+        <section id="bolis-agua" class="section">
+          <h2 id="bolis-agua-titulo" class="section-title">Bolis de agua</h2>
+          <p class="section-subtitle">
+            Frescos, frutales y perfectos para el calor.
+          </p>
+
+          <div class="products-grid">
+            {% for p in agua %}
+            <article class="product-card">
+              <!-- 🖼️ IMAGEN -->
+              {% if p.imagen %}
+              <img
+                src="{{ p.imagen.url }}"
+                alt="{{ p.nombre }}"
+                class="product-img"
+              />
+              {% else %}
+              <div class="product-img placeholder"></div>
+              {% endif %}
+
+              <div>
+                <h3 class="product-name">{{ p.nombre }}</h3>
+
+                {% if p.descripcion %}
+                <p class="product-desc">{{ p.descripcion }}</p>
+                {% endif %}
+              </div>
+
+              <div class="product-meta">
+                <span class="price">${{ p.precio }}</span>
+
+                <form method="post" action="{% url 'add_to_cart' p.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-primary" type="submit">Agregar</button>
+                </form>
+              </div>
+            </article>
+            {% empty %}
+            <p>No hay bolis de agua.</p>
+            {% endfor %}
+          </div>
+        </section>
+
+        <hr />
+
+        <!-- ===================== -->
+        <!-- Bolis de leche -->
+        <!-- ===================== -->
+        <section id="bolis-leche" class="section">
+          <h2 id="bolis-leche-titulo" class="section-title">Bolis de leche</h2>
+          <p class="section-subtitle">Más cremositos, dulces y llenadores.</p>
+
+          <div class="products-grid">
+            {% for p in leche %}
+            <article class="product-card">
+              <!-- 🖼️ IMAGEN -->
+              {% if p.imagen %}
+              <img
+                src="{{ p.imagen.url }}"
+                alt="{{ p.nombre }}"
+                class="product-img"
+              />
+              {% else %}
+              <div class="product-img placeholder"></div>
+              {% endif %}
+
+              <div>
+                <h3 class="product-name">{{ p.nombre }}</h3>
+
+                {% if p.descripcion %}
+                <p class="product-desc">{{ p.descripcion }}</p>
+                {% endif %}
+              </div>
+
+              <div class="product-meta">
+                <span class="price">${{ p.precio }}</span>
+
+                <form method="post" action="{% url 'add_to_cart' p.id %}">
+                  {% csrf_token %}
+                  <button class="btn btn-primary" type="submit">Agregar</button>
+                </form>
+              </div>
+            </article>
+            {% empty %}
+            <p>No hay bolis de leche.</p>
+            {% endfor %}
+          </div>
+        </section>
+      </main>
+    </div>
+  </body>
+</html>

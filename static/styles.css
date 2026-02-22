@@ -1,0 +1,554 @@
+/* =========================================================
+   1) Reset básico y base
+========================================================= */
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+:root{
+  --bg: #fafafa;
+  --text: #111827;
+  --muted: #6b7280;
+  --card: #ffffff;
+  --border: #e5e7eb;
+  --shadow: 0 10px 25px rgba(0,0,0,0.06);
+  --shadow-hover: 0 18px 40px rgba(0,0,0,0.10);
+  --accent: #16a34a;
+
+  /* ALTURA DEL HEADER para que los anchors no queden tapados */
+  --header-h: 160px; /* ajusta si tu header queda más alto/bajo */
+}
+body {
+  font-family: 'Nunito', system-ui, sans-serif;
+}
+
+.titulo-marca {
+  display: inline-block;
+  margin: 0 auto 2rem;
+  padding: 0.6rem 1.4rem;
+  font-size: 1.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.2em;
+  color: #14532d;
+  border: 2px solid #86efac;
+  border-radius: 999px;
+}
+
+
+
+
+
+
+
+
+
+h1, h2 {
+  text-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  text-transform: uppercase;
+}
+
+.pedido {
+  text-transform:initial;
+  font-size: 22px;
+}
+
+h1, h2 {
+  font-family: 'Poppins', sans-serif;
+  
+}
+
+.fa-solid fa-envelope {
+  font-size: 890px;
+}
+
+.correo {
+  font-size: 22px;
+  font-weight: bold;
+}
+
+body{
+  margin: 0;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  line-height: 1.5;
+  background: var(--bg);
+  color: var(--text);
+}
+
+main{
+  padding: 16px;
+}
+
+.font-family {
+  font-family: 'Poppins', system-ui, sans-serif;
+
+
+}
+footer{
+  padding: 24px 16px;
+}
+
+#top{
+  height: 1px;
+}
+
+/* Contenedor principal centrado */
+.container{
+  max-width: 1100px;
+  margin: 0 auto;
+}
+
+/* Links */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* Imágenes responsivas */
+img {
+  max-width: 100%;
+  height: auto;
+  display: block;
+}
+
+/* =========================================================
+   HR (separador) - estilo profesional
+========================================================= */
+hr{
+  border: none;
+  height: 1px;
+  background-color: var(--border);
+  margin: 32px 0;
+}
+
+/* =========================================================
+   2) Header centrado SIEMPRE + sticky + separadores
+========================================================= */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  background: var(--card);
+
+  /* centrado para TODOS los dispositivos */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+
+  gap: 14px;
+  padding: 16px 12px;
+
+  /* separador general del header */
+  border-bottom: 1px solid var(--border);
+}
+
+/* Título de la página */
+.titulo-pagina,
+.header h1 {
+  margin: 0;
+}
+
+/* Logo centrado (infalible) */
+.logo {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  margin: 0;
+}
+
+.slogan {
+  text-align: center;
+  max-width: 600px;     /* evita que la línea sea demasiado larga */
+  margin: 0 auto 24px;  /* centra horizontalmente y da espacio abajo */
+  font-style: italic;   /* opcional: le da más estilo de frase */
+  font-weight: bold
+}
+
+
+.logo img {
+  width: 250px; /* si quieres más pro: bájalo a 140-160 */
+  height: auto;
+  display: block;
+}
+
+/* Nav centrada + separador debajo de los enlaces */
+.nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+
+  width: 100%;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+}
+
+/* Estilo de links del nav (botones) */
+.nav a{
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--card);
+  font-weight: 700;
+  transition: border-color .2s ease, transform .2s ease;
+
+  /* ✅ CENTRADO PERFECTO (arriba/abajo/izq/der) */
+  display: inline-flex;
+  align-items: center;     /* vertical */
+  justify-content: center; /* horizontal */
+  line-height: 1;          /* evita que se “suba” el texto */
+  min-height: 40px;        /* opcional: hace todos parejos */
+}
+
+
+.nav a:hover{
+  border-color: rgba(17,24,39,0.25);
+  transform: translateY(-1px);
+}
+
+/* =========================================================
+   3) Anchors (ajuste fino de scroll al H2)
+========================================================= */
+/*
+#bolis-agua-titulo,
+#bolis-leche-titulo {
+  scroll-margin-top: 370px; /* ajusta 160–220 según te guste */
+
+  /* =========================================
+   FIX ANCHORS con header sticky (definitivo)
+========================================= */
+
+/* Ajusta estos valores si quieres 5-10px más/menos aire */
+:root{
+  --header-h: 210px;      /* altura aprox del header en móvil */
+  --anchor-gap: 16px;     /* espacio extra debajo del header */
+}
+
+@media (min-width: 576px){
+  :root{
+    --header-h: 180px;    /* altura aprox del header en desktop */
+  }
+}
+
+/* =========================================================
+   3) Anchors (scroll exacto debajo del header)
+========================================================= */
+
+#bolis-agua-titulo,
+#bolis-leche-titulo {
+  scroll-margin-top: 260px; /* ← AJUSTE CLAVE */
+}
+
+/* Contacto puede seguir usando el header normal */
+#contacto {
+  scroll-margin-top: var(--header-h);
+}
+
+
+
+/* =========================================================
+   4) Secciones
+========================================================= */
+section {
+  margin: 24px 0;
+}
+
+section h2 {
+  margin: 0 0 12px;
+}
+
+/* =========================================================
+   5) Productos (tarjetas)
+========================================================= */
+.breakfast-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+.breakfast-grid article{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+}
+
+.breakfast-grid article:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(17,24,39,0.20);
+}
+
+.breakfast-grid article img {
+  width: 100%;
+  height: 280px;
+  object-fit: cover;
+  object-position: center 60%;
+  border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+.breakfast-grid article h3 {
+  margin: 0 0 8px;
+}
+
+.breakfast-grid article p {
+  margin: 0 0 12px;
+}
+
+.breakfast-grid article button{
+  width: 100%;
+  padding: 12px 14px;
+  border: 1px solid rgba(17,24,39,0.15);
+  border-radius: 12px;
+  background: linear-gradient(180deg, #ffffff, #f3f4f6);
+  cursor: pointer;
+  font-weight: 800;
+  letter-spacing: .2px;
+  transition: transform .15s ease, border-color .15s ease;
+}
+
+.breakfast-grid article button:hover{
+  transform: translateY(-1px);
+  border-color: rgba(17,24,39,0.35);
+}
+
+
+@media (max-width: 576px) {
+  #bolis-agua-titulo,
+  #bolis-leche-titulo {
+    scroll-margin-top: 440px;
+  }
+}
+
+/* =========================================================
+   6) Breakpoints (responsive)
+========================================================= */
+@media (max-width: 575.98px) {
+  .breakfast-grid {
+    grid-template-columns: 1fr;
+  }
+
+  :root{
+    --header-h: 410px; /* suele crecer en móvil */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .breakfast-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 992px) and (max-width: 1199.98px) {
+  .breakfast-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1200px) {
+  .breakfast-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* =========================================================
+   7) Footer
+========================================================= */
+footer {
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+  padding: 20px 16px;
+}
+
+/* =========================
+   Footer - enlaces como botones
+========================= */
+
+footer nav {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap; /* para que bajen bien en móvil */
+  margin-top: 12px;
+}
+
+footer nav a {
+  border: 1px solid var(--border);
+  padding: 8px 14px;
+  border-radius: 999px;
+  background: var(--card);
+  font-weight: 600;
+  font-size: 0.9rem;
+  transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+footer nav a:hover {
+  transform: translateY(-1px);
+  border-color: rgba(17,24,39,0.25);
+  box-shadow: 0 4px 10px rgba(0,0,0,0.08);
+}
+
+/* =========================================================
+   8) NUEVO FRONT (catalogo.html PRO) - products-grid/cards/botones
+   Pegar al FINAL del archivo
+========================================================= */
+
+/* Secciones con título y subtítulo */
+.section{
+  margin: 24px 0;
+}
+.section-title{
+  margin: 0 0 10px;
+  font-size: 20px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.section-subtitle{
+  margin: 0 0 14px;
+  color: var(--muted);
+}
+
+/* Grid nuevo */
+.products-grid{
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 20px;
+  padding: 16px 0;
+}
+
+@media (min-width: 768px){
+  .products-grid{
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+@media (min-width: 1200px){
+  .products-grid{
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* Card nueva */
+.product-card{
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+  transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.product-card:hover{
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-hover);
+  border-color: rgba(17,24,39,0.20);
+}
+
+.product-name{
+  margin: 0 0 6px;
+  font-weight: 900;
+}
+
+.product-desc{
+  margin: 0 0 12px;
+  color: var(--muted);
+}
+
+/* Meta + precio + botón */
+.product-meta{
+  margin-top: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.price{
+  font-weight: 900;
+  font-size: 16px;
+}
+
+/* Botones reutilizables */
+.btn{
+  cursor: pointer;
+  border-radius: 12px;
+  padding: 10px 14px;
+  font-weight: 800;
+  border: 1px solid rgba(17,24,39,0.15);
+  background: #fff;
+  transition: transform .15s ease, border-color .15s ease, box-shadow .15s ease;
+}
+
+.btn:hover{
+  transform: translateY(-1px);
+  border-color: rgba(17,24,39,0.35);
+  box-shadow: 0 6px 16px rgba(0,0,0,0.10);
+}
+
+.btn-primary{
+  background: var(--accent);
+  color: #fff;
+  border-color: rgba(22,163,74,0.35);
+}
+
+.btn-primary:hover{
+  background: #15803d;           /* verde más profundo */
+  border-color: rgba(22,163,74,0.55);
+  transform: translateY(-1px);   /* efecto elevación */
+  box-shadow: 0 8px 18px rgba(0,0,0,0.18);
+}
+
+.section-title{
+  letter-spacing: .08em;
+}
+
+.section{
+  padding-top: 8px;
+}
+
+.section + .section{
+  margin-top: 34px;
+}
+
+/* =========================
+   Imágenes consistentes (CATÁLOGO NUEVO)
+========================= */
+.product-img{
+  width: 100%;
+  height: 190px;        /* ← AJUSTE CLAVE */
+  object-fit: cover;    /* recorta sin deformar */
+  object-position: center;
+  border-radius: 14px;
+  border: 1px solid var(--border);
+  margin-bottom: 10px;
+  display: block;
+}
+
+/* efecto pro */
+.product-card{
+  overflow: hidden;
+}
+
+.product-card:hover .product-img{
+  transform: scale(1.03);
+  transition: transform .25s ease;
+}
+
+/* placeholder cuando no hay imagen */
+.product-img.placeholder{
+  height: 190px;
+  border-radius: 14px;
+  border: 1px dashed var(--border);
+  background: linear-gradient(180deg, #ffffff, #f3f4f6);
+  margin-bottom: 10px;
+}

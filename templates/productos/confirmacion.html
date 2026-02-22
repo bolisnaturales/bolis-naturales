@@ -1,0 +1,98 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Pedido confirmado - Bolis Naturales</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+  </head>
+
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="titulo-marca">🧾 PEDIDO CONFIRMADO ✅</h1>
+
+        <nav class="nav">
+          <a href="{% url 'catalogo' %}">Volver al catálogo</a>
+          <a href="{% url 'cart_detail' %}">Carrito</a>
+        </nav>
+      </header>
+
+      <main style="padding: 16px; max-width: 720px; margin: 0 auto">
+        <h2 style="margin-top: 10px">¡GRACIAS, {{ pedido.nombre|upper }}!</h2>
+
+        <p>Tu pedido fue registrado correctamente.</p>
+
+        <!-- ===================== -->
+        <!-- Resumen del pedido -->
+        <!-- ===================== -->
+        <section
+          style="
+            margin-top: 20px;
+            padding: 16px;
+            border: 1px solid #e5e7eb;
+            border-radius: 14px;
+            background: #ffffff;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.06);
+          "
+        >
+          <h3 style="margin-top: 0">Resumen</h3>
+
+          <p><strong>ID de pedido:</strong> {{ pedido.id }}</p>
+          <p><strong>Estado:</strong> {{ pedido.estado }}</p>
+          <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+          <p><strong>Dirección:</strong> {{ pedido.direccion_envio }}</p>
+
+          {% if pedido.mensaje %}
+          <p><strong>Mensaje:</strong> {{ pedido.mensaje }}</p>
+          {% endif %}
+
+          <hr />
+
+          <p><strong>Subtotal:</strong> ${{ pedido.subtotal }}</p>
+          <p><strong>Envío:</strong> ${{ pedido.envio }}</p>
+          <p><strong>Total:</strong> ${{ pedido.total }}</p>
+        </section>
+
+        <!-- ===================== -->
+        <!-- BOTÓN DE SEGUIMIENTO -->
+        <!-- ===================== -->
+        <div style="margin-top: 24px; text-align: center">
+          <a
+            href="{% url 'pedido_detalle' pedido.id %}?t={{ pedido.token }}"
+            style="
+              display: inline-block;
+              padding: 14px 26px;
+              background: #16a34a;
+              color: white;
+              text-decoration: none;
+              border-radius: 12px;
+              font-weight: 600;
+              font-size: 16px;
+              box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+            "
+          >
+            🔍 Ver estado de mi pedido
+          </a>
+        </div>
+
+        <!-- ===================== -->
+        <!-- Info adicional -->
+        <!-- ===================== -->
+        <div style="margin-top: 30px; opacity: 0.8">
+          <p>
+            Guarda tu ID de pedido (<strong>{{ pedido.id }}</strong>) por si lo
+            necesitas.
+          </p>
+
+          <p>
+            <strong>Horarios:</strong><br />
+            Lunes a viernes: 4:00 pm a 7:30 pm<br />
+            Sábado y domingo: 11:00 am a 3:00 pm
+          </p>
+        </div>
+      </main>
+    </div>
+  </body>
+</html>

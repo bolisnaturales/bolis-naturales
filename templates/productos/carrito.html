@@ -1,0 +1,74 @@
+{% load static %}
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Carrito - Bolis Naturales</title>
+    <link rel="stylesheet" href="{% static 'styles.css' %}" />
+  </head>
+  <body>
+    <div class="container">
+      <header class="header">
+        <h1 class="titulo-marca">Carrito</h1>
+        <nav class="nav">
+          <a href="{% url 'catalogo' %}">Seguir comprando</a>
+          <a href="{% url 'checkout' %}">Checkout</a>
+        </nav>
+      </header>
+
+      <main>
+        {% if items %}
+        <div class="breakfast-grid">
+          {% for it in items %}
+          <article>
+            <h3>{{ it.producto.nombre }}</h3>
+            <p>${{ it.producto.precio }} c/u</p>
+
+            <form method="post" action="{% url 'cart_update' it.producto.id %}">
+              {% csrf_token %}
+              <label>Cantidad</label>
+              <input
+                type="number"
+                name="qty"
+                min="1"
+                value="{{ it.qty }}"
+                style="
+                  width: 100%;
+                  padding: 12px;
+                  border-radius: 12px;
+                  border: 1px solid #e5e7eb;
+                  margin: 8px 0;
+                "
+              />
+              <button type="submit">Actualizar</button>
+            </form>
+
+            <p><strong>Subtotal:</strong> ${{ it.subtotal }}</p>
+
+            <form method="post" action="{% url 'cart_remove' it.producto.id %}">
+              {% csrf_token %}
+              <button type="submit">Quitar</button>
+            </form>
+          </article>
+          {% endfor %}
+        </div>
+
+        <hr />
+        <p><strong>Subtotal:</strong> ${{ total }}</p>
+        <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
+        <p><strong>Total:</strong> ${{ total_con_envio }}</p>
+
+        <p>
+          <a href="{% url 'checkout' %}" style="font-weight: 800"
+            >Continuar a Checkout</a
+          >
+        </p>
+        {% else %}
+        <p>Tu carrito está vacío.</p>
+        <p><a href="{% url 'catalogo' %}">Volver al catálogo</a></p>
+        {% endif %}
+      </main>
+    </div>
+  </body>
+</html>
