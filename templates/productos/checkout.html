@@ -20,10 +20,13 @@
 
       <main style="padding: 16px">
         <!-- DEBUG visual (para confirmar que sí llegaron variables) -->
+        <!-- prettier-ignore -->
         <p style="opacity: 0.7; font-size: 14px">
-          Items: {{ items|length }} — Subtotal: ${{ subtotal }} — Envío: ${{
-          envio }} — Total: ${{ total }}
-        </p>
+  Items: {{ items|length }} —
+  Subtotal: ${{ subtotal }} —
+  Envío: $<span>{{ envio }}</span> —
+  Total: ${{ total }}
+</p>
 
         {% if error %}
         <p style="font-weight: 800; color: #b91c1c">{{ error }}</p>
