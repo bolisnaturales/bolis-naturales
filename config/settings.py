@@ -27,6 +27,8 @@ DEBUG = True
 
 ALLOWED_HOSTS = [
     "bolis-naturales.onrender.com",
+    "bolisnaturales.shop",
+    "www.bolisnaturales.shop",
     "localhost",
     "127.0.0.1",
 ]
