@@ -33,10 +33,14 @@ ALLOWED_HOSTS = [
 
 # --- Render / HTTPS detrás de proxy ---
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+USE_X_FORWARDED_HOST = True
 
 CSRF_TRUSTED_ORIGINS = [
     "https://bolis-naturales.onrender.com",
 ]
+
+CSRF_COOKIE_SECURE = True
+SESSION_COOKIE_SECURE = True
 
 # Application definition
 
