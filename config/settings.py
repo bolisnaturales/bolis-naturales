@@ -25,7 +25,11 @@ SECRET_KEY = 'django-insecure-4=+)n()^$k-bfp9gnqh0oh9i@0b5j2&c0qkjj5u+^l!^+n-g^!
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "bolis-naturales.onrender.com",
+    "localhost",
+    "127.0.0.1",
+]
 
 
 # Application definition
