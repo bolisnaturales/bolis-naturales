@@ -1,6 +1,7 @@
 from decimal import Decimal
 
 from django.shortcuts import render, redirect, get_object_or_404
+from django.db.models import CharField, TextField
 
 from .models import Producto, Pedido, PedidoItem
 
@@ -65,10 +66,26 @@ def _cart_items_and_total(cart):
 # =========================
 # Catálogo
 # =========================
+def _filter_by_categoria(nombre_categoria: str):
+    """
+    Filtra productos por categoría SIN romperse,
+    funcione si Producto.categoria es:
+    - ForeignKey (categoria__nombre)
+    - CharField/TextField (categoria)
+    """
+    field = Producto._meta.get_field("categoria")
+
+    # Si es texto (CharField/TextField), filtra por el campo directo
+    if isinstance(field, (CharField, TextField)):
+        return Producto.objects.filter(categoria__iexact=nombre_categoria, activo=True).order_by("id")
+
+    # Si NO es texto, asumimos relación (ForeignKey) con atributo "nombre"
+    return Producto.objects.filter(categoria__nombre__iexact=nombre_categoria, activo=True).order_by("id")
+
+
 def catalogo(request):
-    # ✅ CORREGIDO: ahora es "categoria" (no "tipo")
-    agua = Producto.objects.filter(categoria="AGUA", activo=True).order_by("id")
-    leche = Producto.objects.filter(categoria="LECHE", activo=True).order_by("id")
+    agua = _filter_by_categoria("Agua")
+    leche = _filter_by_categoria("Leche")
 
     return render(request, "productos/catalogo.html", {
         "agua": agua,
