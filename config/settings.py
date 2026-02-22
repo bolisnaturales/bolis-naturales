@@ -31,6 +31,13 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+# --- Render / HTTPS detrás de proxy ---
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
+CSRF_TRUSTED_ORIGINS = [
+    "https://bolis-naturales.onrender.com",
+]
+
 # Application definition
 
 INSTALLED_APPS = [
