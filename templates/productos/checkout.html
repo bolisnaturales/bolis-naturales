@@ -19,13 +19,11 @@
       </header>
 
       <main style="padding: 16px">
-        <!-- DEBUG visual -->
+        <!-- DEBUG visual (opcional) -->
+        <!-- prettier-ignore -->
         <p style="opacity: 0.7; font-size: 14px">
-          Items: {{ items|length }} — Subtotal: ${{ subtotal }} — Envío: $<span
-            >{{ envio }}</span
-          >
-          — Total: ${{ total }}
-        </p>
+  Items: {{ items|length }} — Subtotal: ${{ subtotal }} — Envío: ${{ envio }} — Total: ${{ total }}
+</p>
 
         {% if error %}
         <p style="font-weight: 800; color: #b91c1c">{{ error }}</p>
@@ -45,80 +43,58 @@
         </div>
 
         <hr />
+
         <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
         <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
         <p><strong>Total:</strong> ${{ total }}</p>
 
-        <!-- 🚀 MENSAJE PARA SUBIR TICKET -->
+        <!-- 🚚 Mensaje para subir ticket (dinámico) -->
         {% if mensaje_envio %}
         <p style="font-weight: 800; color: #16a34a; margin-top: 10px">
-          💡 {{ mensaje_envio }}
+          {{ mensaje_envio }}
         </p>
         {% endif %}
 
         <hr />
-        <h2>Horario de reparto</h2>
 
+        <h2>Horario de reparto</h2>
         <p>
           <strong>Horarios:</strong><br />
           {{ horarios.lv }}<br />
           {{ horarios.sd }}
         </p>
 
+        <!-- ===================== -->
+        <!-- FORMULARIO -->
+        <!-- ===================== -->
         <form method="post">
           {% csrf_token %}
 
           <label>Nombre</label><br />
-          <input
-            name="nombre"
-            required
-            style="
-              width: 100%;
-              padding: 12px;
-              border-radius: 12px;
-              border: 1px solid #e5e7eb;
-              margin: 8px 0;
-            "
-          />
+          <input name="nombre" required class="form-input" />
 
           <label>Teléfono</label><br />
           <input
             name="telefono"
             required
-            style="
-              width: 100%;
-              padding: 12px;
-              border-radius: 12px;
-              border: 1px solid #e5e7eb;
-              margin: 8px 0;
-            "
+            class="form-input"
+            inputmode="numeric"
+            maxlength="14"
+            id="telefono"
+            placeholder="(209) 555-1234"
+            autocomplete="tel"
           />
 
           <label>Dirección de envío</label><br />
           <input
             name="direccion"
             required
-            style="
-              width: 100%;
-              padding: 12px;
-              border-radius: 12px;
-              border: 1px solid #e5e7eb;
-              margin: 8px 0;
-            "
+            class="form-input"
+            autocomplete="street-address"
           />
 
           <label>Mensaje (opcional)</label><br />
-          <textarea
-            name="mensaje"
-            rows="3"
-            style="
-              width: 100%;
-              padding: 12px;
-              border-radius: 12px;
-              border: 1px solid #e5e7eb;
-              margin: 8px 0;
-            "
-          ></textarea>
+          <textarea name="mensaje" rows="3" class="form-input"></textarea>
 
           <button
             type="submit"
@@ -131,9 +107,41 @@
 
         {% else %}
         <p>No hay productos en tu carrito.</p>
-        <a href="{% url 'catalogo' %}">Volver al catálogo</a>
+        <a href="{% url 'catalogo' %}" class="btn">Volver al catálogo</a>
         {% endif %}
       </main>
     </div>
+
+    <!-- ===================== -->
+    <!-- JS: Teléfono solo números + formato (###) ###-#### -->
+    <!-- ===================== -->
+    <script>
+      const telInput = document.getElementById("telefono");
+
+      if (telInput) {
+        telInput.addEventListener("input", function (e) {
+          // 1) Quitar todo lo que no sea número
+          let numbers = e.target.value.replace(/\D/g, "");
+
+          // 2) Limitar a 10 dígitos (USA)
+          numbers = numbers.substring(0, 10);
+
+          // 3) Formatear (###) ###-####
+          let formatted = "";
+
+          if (numbers.length === 0) {
+            formatted = "";
+          } else if (numbers.length < 4) {
+            formatted = `(${numbers}`;
+          } else if (numbers.length < 7) {
+            formatted = `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
+          } else {
+            formatted = `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6)}`;
+          }
+
+          e.target.value = formatted;
+        });
+      }
+    </script>
   </body>
 </html>

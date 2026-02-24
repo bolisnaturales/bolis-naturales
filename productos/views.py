@@ -57,7 +57,9 @@ def _cart_items_and_total(cart):
             "subtotal": item_subtotal,
         })
 
+    # orden opcional por nombre (solo para que se vea bonito)
     items.sort(key=lambda x: x["producto"].nombre.lower())
+
     return items, subtotal
 
 
@@ -67,9 +69,9 @@ def _cart_items_and_total(cart):
 def calcular_envio(subtotal: Decimal, tiene_items: bool) -> Decimal:
     """
     Regla:
-    - Sin items → envío 0
-    - Subtotal >= 20 → envío 3
-    - Subtotal < 20 → envío 6
+    - Sin items -> envío 0
+    - Subtotal >= 20 -> envío 3
+    - Subtotal < 20 -> envío 6
     """
     if not tiene_items:
         return Decimal("0.00")
@@ -80,18 +82,39 @@ def calcular_envio(subtotal: Decimal, tiene_items: bool) -> Decimal:
     return Decimal("6.00")
 
 
+def _mensaje_envio(subtotal: Decimal) -> str:
+    """
+    Mensaje para empujar ticket promedio:
+    - Si falta para llegar a 20 -> mensaje con faltante
+    - Si ya llegó a 20 -> mensaje de logro
+    """
+    objetivo = Decimal("20.00")
+    if subtotal < objetivo:
+        faltante = (objetivo - subtotal).quantize(Decimal("0.01"))
+        return f"🚚 ¡Agrega ${faltante} más y reduce tu envío a solo $3!"
+    return "✅ ¡Genial! Ya calificas para envío reducido de $3."
+
+
 # =========================
 # Catálogo
 # =========================
 def _filter_by_categoria(nombre_categoria: str):
+    """
+    Filtra productos por categoría SIN romperse,
+    funcione si Producto.categoria es:
+    - ForeignKey (categoria__nombre)
+    - CharField/TextField (categoria)
+    """
     field = Producto._meta.get_field("categoria")
 
+    # Si es texto (CharField/TextField), filtra por el campo directo
     if isinstance(field, (CharField, TextField)):
         return Producto.objects.filter(
             categoria__iexact=nombre_categoria,
             activo=True
         ).order_by("id")
 
+    # Si NO es texto, asumimos relación (ForeignKey) con atributo "nombre"
     return Producto.objects.filter(
         categoria__nombre__iexact=nombre_categoria,
         activo=True
@@ -109,9 +132,12 @@ def catalogo(request):
 
 
 # =========================
-# Carrito
+# Carrito (agregar / ver / actualizar / quitar)
 # =========================
 def add_to_cart(request, producto_id):
+    """
+    POST -> agrega 1 unidad al carrito y redirige al carrito.
+    """
     if request.method != "POST":
         return redirect("catalogo")
 
@@ -138,14 +164,11 @@ def cart_detail(request):
     envio = calcular_envio(subtotal, bool(items))
     total_con_envio = subtotal + envio
 
-    mensaje_envio = ""
-    if subtotal < Decimal("20.00"):
-        faltante = (Decimal("20.00") - subtotal).quantize(Decimal("0.01"))
-        mensaje_envio = f"Te faltan ${faltante} para pagar solo $3 de envío"
+    mensaje_envio = _mensaje_envio(subtotal) if items else ""
 
     return render(request, "productos/carrito.html", {
         "items": items,
-        "total": subtotal,
+        "total": subtotal,  # tu template carrito.html usa "total" como subtotal
         "envio": envio,
         "total_con_envio": total_con_envio,
         "mensaje_envio": mensaje_envio,
@@ -153,6 +176,9 @@ def cart_detail(request):
 
 
 def cart_update(request, producto_id):
+    """
+    POST -> actualiza cantidad.
+    """
     if request.method != "POST":
         return redirect("cart_detail")
 
@@ -179,6 +205,9 @@ def cart_update(request, producto_id):
 
 
 def cart_remove(request, producto_id):
+    """
+    POST -> quita producto del carrito.
+    """
     if request.method != "POST":
         return redirect("cart_detail")
 
@@ -194,7 +223,7 @@ def cart_remove(request, producto_id):
 
 
 # =========================
-# Checkout
+# Checkout (guardar pedido real)
 # =========================
 def checkout(request):
     cart = _get_cart(request.session)
@@ -205,11 +234,7 @@ def checkout(request):
 
     envio = calcular_envio(subtotal, bool(items))
     total = subtotal + envio
-
-    mensaje_envio = ""
-    if subtotal < Decimal("20.00"):
-        faltante = (Decimal("20.00") - subtotal).quantize(Decimal("0.01"))
-        mensaje_envio = f"Te faltan ${faltante} para pagar solo $3 de envío"
+    mensaje_envio = _mensaje_envio(subtotal)
 
     horarios = {
         "lv": "Lunes a viernes: 4:00 pm a 7:30 pm",
@@ -222,6 +247,7 @@ def checkout(request):
         direccion = request.POST.get("direccion", "").strip()
         mensaje = request.POST.get("mensaje", "").strip()
 
+        # Validación mínima MVP
         if not (nombre and telefono and direccion):
             return render(request, "productos/checkout.html", {
                 "items": items,
@@ -233,9 +259,13 @@ def checkout(request):
                 "error": "Por favor llena nombre, teléfono y dirección.",
             })
 
+        # (opcional recomendado) limpiar teléfono a solo números antes de guardar
+        telefono_solo_numeros = "".join(ch for ch in telefono if ch.isdigit())
+
+        # 1) Crear Pedido
         pedido = Pedido.objects.create(
             nombre=nombre,
-            telefono=telefono,
+            telefono=telefono_solo_numeros,
             direccion_envio=direccion,
             mensaje=mensaje,
             subtotal=subtotal,
@@ -244,20 +274,26 @@ def checkout(request):
             estado="CONFIRMADO",
         )
 
+        # 2) Crear PedidoItems (snapshot)
         for it in items:
             p = it["producto"]
+            qty = it["qty"]
+            sub = it["subtotal"]
+
             PedidoItem.objects.create(
                 pedido=pedido,
                 producto=p,
                 nombre_producto=p.nombre,
                 precio_unitario=p.precio,
-                cantidad=it["qty"],
-                subtotal=it["subtotal"],
+                cantidad=qty,
+                subtotal=sub,
             )
 
+        # 3) Limpiar carrito
         request.session.pop("cart", None)
         request.session.modified = True
 
+        # 4) Confirmación
         return render(request, "productos/confirmacion.html", {
             "pedido": pedido,
             "horarios": horarios,
@@ -275,7 +311,7 @@ def checkout(request):
 
 
 # =========================
-# Estado del pedido
+# Estado del pedido (privado con token)
 # =========================
 def pedido_detalle(request, pedido_id):
     token = request.GET.get("t", "").strip()
