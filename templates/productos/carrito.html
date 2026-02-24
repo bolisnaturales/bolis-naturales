@@ -41,14 +41,14 @@
                   margin: 8px 0;
                 "
               />
-              <button type="submit">Actualizar</button>
+              <button type="submit" class="btn">Actualizar</button>
             </form>
 
             <p><strong>Subtotal:</strong> ${{ it.subtotal }}</p>
 
             <form method="post" action="{% url 'cart_remove' it.producto.id %}">
               {% csrf_token %}
-              <button type="submit">Quitar</button>
+              <button type="submit" class="btn btn-danger">Quitar</button>
             </form>
           </article>
           {% endfor %}
@@ -59,11 +59,19 @@
         <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
         <p><strong>Total:</strong> ${{ total_con_envio }}</p>
 
-        <p>
-          <a href="{% url 'checkout' %}" style="font-weight: 800"
-            >Confirmar pedido</a
-          >
+        <!-- 🚀 MENSAJE PARA SUBIR TICKET -->
+        {% if mensaje_envio %}
+        <p style="font-weight: 800; color: #16a34a; margin-top: 10px">
+          💡 {{ mensaje_envio }}
         </p>
+        {% endif %}
+
+        <p>
+          <a href="{% url 'checkout' %}" class="btn btn-primary">
+            Confirmar pedido
+          </a>
+        </p>
+
         {% else %}
         <p>Tu carrito está vacío.</p>
         <p><a href="{% url 'catalogo' %}">Volver al catálogo</a></p>

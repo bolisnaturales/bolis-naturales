@@ -57,30 +57,45 @@ def _cart_items_and_total(cart):
             "subtotal": item_subtotal,
         })
 
-    # orden opcional por nombre (solo para que se vea bonito)
     items.sort(key=lambda x: x["producto"].nombre.lower())
-
     return items, subtotal
+
+
+# =========================
+# Helper: cálculo de envío
+# =========================
+def calcular_envio(subtotal: Decimal, tiene_items: bool) -> Decimal:
+    """
+    Regla:
+    - Sin items → envío 0
+    - Subtotal >= 20 → envío 3
+    - Subtotal < 20 → envío 6
+    """
+    if not tiene_items:
+        return Decimal("0.00")
+
+    if subtotal >= Decimal("20.00"):
+        return Decimal("3.00")
+
+    return Decimal("6.00")
 
 
 # =========================
 # Catálogo
 # =========================
 def _filter_by_categoria(nombre_categoria: str):
-    """
-    Filtra productos por categoría SIN romperse,
-    funcione si Producto.categoria es:
-    - ForeignKey (categoria__nombre)
-    - CharField/TextField (categoria)
-    """
     field = Producto._meta.get_field("categoria")
 
-    # Si es texto (CharField/TextField), filtra por el campo directo
     if isinstance(field, (CharField, TextField)):
-        return Producto.objects.filter(categoria__iexact=nombre_categoria, activo=True).order_by("id")
+        return Producto.objects.filter(
+            categoria__iexact=nombre_categoria,
+            activo=True
+        ).order_by("id")
 
-    # Si NO es texto, asumimos relación (ForeignKey) con atributo "nombre"
-    return Producto.objects.filter(categoria__nombre__iexact=nombre_categoria, activo=True).order_by("id")
+    return Producto.objects.filter(
+        categoria__nombre__iexact=nombre_categoria,
+        activo=True
+    ).order_by("id")
 
 
 def catalogo(request):
@@ -94,12 +109,9 @@ def catalogo(request):
 
 
 # =========================
-# Carrito (agregar / ver / actualizar / quitar)
+# Carrito
 # =========================
 def add_to_cart(request, producto_id):
-    """
-    POST -> agrega 1 unidad al carrito y redirige al carrito.
-    """
     if request.method != "POST":
         return redirect("catalogo")
 
@@ -123,21 +135,24 @@ def cart_detail(request):
     cart = _get_cart(request.session)
     items, subtotal = _cart_items_and_total(cart)
 
-    envio = Decimal("6.00") if items else Decimal("0.00")
+    envio = calcular_envio(subtotal, bool(items))
     total_con_envio = subtotal + envio
+
+    mensaje_envio = ""
+    if subtotal < Decimal("20.00"):
+        faltante = (Decimal("20.00") - subtotal).quantize(Decimal("0.01"))
+        mensaje_envio = f"Te faltan ${faltante} para pagar solo $3 de envío"
 
     return render(request, "productos/carrito.html", {
         "items": items,
-        "total": subtotal,  # tu template carrito.html usa "total" como subtotal
+        "total": subtotal,
         "envio": envio,
         "total_con_envio": total_con_envio,
+        "mensaje_envio": mensaje_envio,
     })
 
 
 def cart_update(request, producto_id):
-    """
-    POST -> actualiza cantidad.
-    """
     if request.method != "POST":
         return redirect("cart_detail")
 
@@ -164,9 +179,6 @@ def cart_update(request, producto_id):
 
 
 def cart_remove(request, producto_id):
-    """
-    POST -> quita producto del carrito.
-    """
     if request.method != "POST":
         return redirect("cart_detail")
 
@@ -182,7 +194,7 @@ def cart_remove(request, producto_id):
 
 
 # =========================
-# Checkout (guardar pedido real)
+# Checkout
 # =========================
 def checkout(request):
     cart = _get_cart(request.session)
@@ -191,8 +203,13 @@ def checkout(request):
     if not items:
         return redirect("catalogo")
 
-    envio = Decimal("6.00")
+    envio = calcular_envio(subtotal, bool(items))
     total = subtotal + envio
+
+    mensaje_envio = ""
+    if subtotal < Decimal("20.00"):
+        faltante = (Decimal("20.00") - subtotal).quantize(Decimal("0.01"))
+        mensaje_envio = f"Te faltan ${faltante} para pagar solo $3 de envío"
 
     horarios = {
         "lv": "Lunes a viernes: 4:00 pm a 7:30 pm",
@@ -205,7 +222,6 @@ def checkout(request):
         direccion = request.POST.get("direccion", "").strip()
         mensaje = request.POST.get("mensaje", "").strip()
 
-        # Validación mínima MVP
         if not (nombre and telefono and direccion):
             return render(request, "productos/checkout.html", {
                 "items": items,
@@ -213,10 +229,10 @@ def checkout(request):
                 "envio": envio,
                 "total": total,
                 "horarios": horarios,
+                "mensaje_envio": mensaje_envio,
                 "error": "Por favor llena nombre, teléfono y dirección.",
             })
 
-        # 1) Crear Pedido (token se genera solo en models.py con save())
         pedido = Pedido.objects.create(
             nombre=nombre,
             telefono=telefono,
@@ -228,26 +244,20 @@ def checkout(request):
             estado="CONFIRMADO",
         )
 
-        # 2) Crear PedidoItems (snapshot)
         for it in items:
             p = it["producto"]
-            qty = it["qty"]
-            sub = it["subtotal"]
-
             PedidoItem.objects.create(
                 pedido=pedido,
                 producto=p,
                 nombre_producto=p.nombre,
                 precio_unitario=p.precio,
-                cantidad=qty,
-                subtotal=sub,
+                cantidad=it["qty"],
+                subtotal=it["subtotal"],
             )
 
-        # 3) Limpiar carrito
         request.session.pop("cart", None)
         request.session.modified = True
 
-        # 4) Confirmación
         return render(request, "productos/confirmacion.html", {
             "pedido": pedido,
             "horarios": horarios,
@@ -259,12 +269,13 @@ def checkout(request):
         "envio": envio,
         "total": total,
         "horarios": horarios,
+        "mensaje_envio": mensaje_envio,
         "error": "",
     })
 
 
 # =========================
-# Estado del pedido (privado con token)
+# Estado del pedido
 # =========================
 def pedido_detalle(request, pedido_id):
     token = request.GET.get("t", "").strip()

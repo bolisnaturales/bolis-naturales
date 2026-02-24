@@ -582,3 +582,39 @@ a[role="button"]{
 .btn-primary{
   color: #fff !important;
 }
+
+/* Botón primario verde (sí debe ir blanco) */
+.btn-primary{
+  color: #fff !important;
+}
+
+/* ===============================
+   HELPERS Y BOTONES EXTRA (AÑADIDO)
+=============================== */
+
+/* Helpers de layout */
+.text-center{
+  text-align: center;
+}
+.mt-24{
+  margin-top: 24px;
+}
+
+/* CTA extra (más llamativo) */
+.btn-cta{
+  box-shadow: 0 10px 25px rgba(34,197,94,0.40);
+}
+.btn-cta:hover{
+  box-shadow: 0 16px 40px rgba(34,197,94,0.50);
+}
+
+/* Botón peligro (para Quitar) */
+.btn-danger{
+  background: #ef4444;
+  color: #fff !important;
+  border-color: rgba(239,68,68,0.45);
+}
+.btn-danger:hover{
+  background: #dc2626;
+  border-color: rgba(239,68,68,0.65);
+}

@@ -19,14 +19,13 @@
       </header>
 
       <main style="padding: 16px">
-        <!-- DEBUG visual (para confirmar que sí llegaron variables) -->
-        <!-- prettier-ignore -->
+        <!-- DEBUG visual -->
         <p style="opacity: 0.7; font-size: 14px">
-  Items: {{ items|length }} —
-  Subtotal: ${{ subtotal }} —
-  Envío: $<span>{{ envio }}</span> —
-  Total: ${{ total }}
-</p>
+          Items: {{ items|length }} — Subtotal: ${{ subtotal }} — Envío: $<span
+            >{{ envio }}</span
+          >
+          — Total: ${{ total }}
+        </p>
 
         {% if error %}
         <p style="font-weight: 800; color: #b91c1c">{{ error }}</p>
@@ -49,6 +48,13 @@
         <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
         <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
         <p><strong>Total:</strong> ${{ total }}</p>
+
+        <!-- 🚀 MENSAJE PARA SUBIR TICKET -->
+        {% if mensaje_envio %}
+        <p style="font-weight: 800; color: #16a34a; margin-top: 10px">
+          💡 {{ mensaje_envio }}
+        </p>
+        {% endif %}
 
         <hr />
         <h2>Horario de reparto</h2>
@@ -114,7 +120,11 @@
             "
           ></textarea>
 
-          <button type="submit" style="margin-top: 12px">
+          <button
+            type="submit"
+            class="btn btn-primary btn-cta"
+            style="margin-top: 12px"
+          >
             Confirmar pedido
           </button>
         </form>
