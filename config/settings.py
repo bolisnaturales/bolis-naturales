@@ -1,6 +1,5 @@
 import os
 from pathlib import Path
-
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -8,32 +7,23 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # =========================================================
 # Seguridad
 # =========================================================
-
 SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-dev-key")
 
-# Acepta True/true/1/yes
 DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "yes")
 
-# Render / Proxy HTTPS (recomendado)
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
-
-# ALLOWED_HOSTS en Render:
-# bolis-naturales.onrender.com,bolisnaturales.shop
 ALLOWED_HOSTS = [
     h.strip()
     for h in os.environ.get("ALLOWED_HOSTS", "").split(",")
     if h.strip()
 ]
 
+# Render usa proxy https
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+
 # =========================================================
 # Aplicaciones
 # =========================================================
-
 INSTALLED_APPS = [
-    # Cloudinary
-    "cloudinary_storage",
-    "cloudinary",
-
     # Django
     "django.contrib.admin",
     "django.contrib.auth",
@@ -49,7 +39,6 @@ INSTALLED_APPS = [
 # =========================================================
 # Middleware
 # =========================================================
-
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
@@ -67,7 +56,6 @@ ROOT_URLCONF = "config.urls"
 # =========================================================
 # Templates
 # =========================================================
-
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -89,12 +77,9 @@ WSGI_APPLICATION = "config.wsgi.application"
 # =========================================================
 # Base de datos (Render)
 # =========================================================
-
-DATABASE_URL = os.environ.get("DATABASE_URL")
-
 DATABASES = {
     "default": dj_database_url.parse(
-        DATABASE_URL,
+        os.environ.get("DATABASE_URL"),
         conn_max_age=600,
         ssl_require=True,
     )
@@ -103,7 +88,6 @@ DATABASES = {
 # =========================================================
 # Validadores de contraseña
 # =========================================================
-
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -114,29 +98,24 @@ AUTH_PASSWORD_VALIDATORS = [
 # =========================================================
 # Internacionalización
 # =========================================================
-
 LANGUAGE_CODE = "es-mx"
 TIME_ZONE = "America/Mexico_City"
 USE_I18N = True
 USE_TZ = True
 
 # =========================================================
-# STATIC + MEDIA (Django 5 recomendado)
+# STATIC (WhiteNoise)
 # =========================================================
-
 STATIC_URL = "/static/"
 STATIC_ROOT = BASE_DIR / "staticfiles"
 
-# ✅ Django 4.2/5: usa STORAGES (más estable que DEFAULT_FILE_STORAGE/STATICFILES_STORAGE)
-STORAGES = {
-    "staticfiles": {
-        "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage",
-    },
-    "default": {
-        "BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage",
-    },
-}
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
 # =========================================================
+# MEDIA (subidas desde admin)
+# =========================================================
+MEDIA_URL = "/media/"
+MEDIA_ROOT = BASE_DIR / "media"
 
+# =========================================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
