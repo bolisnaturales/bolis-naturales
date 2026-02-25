@@ -1,48 +1,49 @@
-import os
 from pathlib import Path
+import os
 import dj_database_url
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-# =========================================================
-# Seguridad
-# =========================================================
-SECRET_KEY = os.environ.get("SECRET_KEY", "insecure-dev-key")
-
+SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret-key-change-me")
 DEBUG = os.environ.get("DEBUG", "False").lower() in ("true", "1", "yes")
 
-ALLOWED_HOSTS = [
-    h.strip()
-    for h in os.environ.get("ALLOWED_HOSTS", "").split(",")
-    if h.strip()
-]
+allowed_hosts_env = os.environ.get("ALLOWED_HOSTS", "")
+if allowed_hosts_env.strip():
+    ALLOWED_HOSTS = [h.strip() for h in allowed_hosts_env.split(",") if h.strip()]
+else:
+    ALLOWED_HOSTS = [
+        "127.0.0.1",
+        "localhost",
+        "bolis-naturales.onrender.com",
+        "bolisnaturales.shop",
+        "www.bolisnaturales.shop",
+    ]
 
-# Render usa proxy https
+csrf_origins_env = os.environ.get("CSRF_TRUSTED_ORIGINS", "")
+if csrf_origins_env.strip():
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in csrf_origins_env.split(",") if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = [
+        "https://bolis-naturales.onrender.com",
+        "https://bolisnaturales.shop",
+        "https://www.bolisnaturales.shop",
+    ]
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
-# =========================================================
-# Aplicaciones
-# =========================================================
 INSTALLED_APPS = [
-    # Django
     "django.contrib.admin",
     "django.contrib.auth",
     "django.contrib.contenttypes",
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-
-    # Tu app
     "productos",
 ]
 
-# =========================================================
-# Middleware
-# =========================================================
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
     "whitenoise.middleware.WhiteNoiseMiddleware",
-
     "django.contrib.sessions.middleware.SessionMiddleware",
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
@@ -52,10 +53,8 @@ MIDDLEWARE = [
 ]
 
 ROOT_URLCONF = "config.urls"
+WSGI_APPLICATION = "config.wsgi.application"
 
-# =========================================================
-# Templates
-# =========================================================
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -72,22 +71,23 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = "config.wsgi.application"
+DATABASE_URL = os.environ.get("DATABASE_URL")
+if DATABASE_URL:
+    DATABASES = {
+        "default": dj_database_url.parse(
+            DATABASE_URL,
+            conn_max_age=600,
+            ssl_require=True,
+        )
+    }
+else:
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": BASE_DIR / "db.sqlite3",
+        }
+    }
 
-# =========================================================
-# Base de datos (Render)
-# =========================================================
-DATABASES = {
-    "default": dj_database_url.parse(
-        os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True,
-    )
-}
-
-# =========================================================
-# Validadores de contraseña
-# =========================================================
 AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator"},
     {"NAME": "django.contrib.auth.password_validation.MinimumLengthValidator"},
@@ -95,27 +95,30 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator"},
 ]
 
-# =========================================================
-# Internacionalización
-# =========================================================
 LANGUAGE_CODE = "es-mx"
-TIME_ZONE = "America/Mexico_City"
+TIME_ZONE = "America/Los_Angeles"
 USE_I18N = True
 USE_TZ = True
 
-# =========================================================
-# STATIC (WhiteNoise)
-# =========================================================
 STATIC_URL = "/static/"
-STATIC_ROOT = BASE_DIR / "staticfiles"
 
+STATICFILES_DIRS = []
+if (BASE_DIR / "static").exists():
+    STATICFILES_DIRS = [BASE_DIR / "static"]
+
+STATIC_ROOT = BASE_DIR / "staticfiles"
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
-# =========================================================
-# MEDIA (subidas desde admin)
-# =========================================================
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
-# =========================================================
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
+
+if not DEBUG:
+    SESSION_COOKIE_SECURE = True
+    CSRF_COOKIE_SECURE = True
+    SECURE_SSL_REDIRECT = True
+
+    SECURE_HSTS_SECONDS = int(os.environ.get("SECURE_HSTS_SECONDS", "0"))
+    SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+    SECURE_HSTS_PRELOAD = True
