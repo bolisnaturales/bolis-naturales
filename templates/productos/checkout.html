@@ -19,14 +19,10 @@
       </header>
 
       <main style="padding: 16px">
-        <!-- DEBUG visual (opcional) -->
-        <!-- prettier-ignore -->
-        <p style="opacity: 0.7; font-size: 14px">
-  Items: {{ items|length }} — Subtotal: ${{ subtotal }} — Envío: ${{ envio }} — Total: ${{ total }}
-</p>
-
         {% if error %}
-        <p style="font-weight: 800; color: #b91c1c">{{ error }}</p>
+        <p style="font-weight: 800; color: #b91c1c; margin-bottom: 12px">
+          {{ error }}
+        </p>
         {% endif %}
 
         <h2>Tu pedido</h2>
@@ -43,105 +39,140 @@
         </div>
 
         <hr />
-
         <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
         <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
         <p><strong>Total:</strong> ${{ total }}</p>
 
-        <!-- 🚚 Mensaje para subir ticket (dinámico) -->
-        {% if mensaje_envio %}
-        <p style="font-weight: 800; color: #16a34a; margin-top: 10px">
-          {{ mensaje_envio }}
-        </p>
-        {% endif %}
-
         <hr />
-
         <h2>Horario de reparto</h2>
+
         <p>
           <strong>Horarios:</strong><br />
           {{ horarios.lv }}<br />
           {{ horarios.sd }}
         </p>
 
-        <!-- ===================== -->
-        <!-- FORMULARIO -->
-        <!-- ===================== -->
-        <form method="post">
+        <form method="post" novalidate>
           {% csrf_token %}
 
-          <label>Nombre</label><br />
-          <input name="nombre" required class="form-input" />
-
-          <label>Teléfono</label><br />
+          <label for="nombre">Nombre</label><br />
           <input
-            name="telefono"
+            id="nombre"
+            name="nombre"
+            type="text"
             required
-            class="form-input"
-            inputmode="numeric"
-            maxlength="14"
+            autocomplete="name"
+            placeholder="Ej: Diego"
+            value="{{ request.POST.nombre|default:'' }}"
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
+          />
+
+          <label for="telefono">Teléfono (10 dígitos)</label><br />
+          <input
             id="telefono"
-            placeholder="(209) 555-1234"
-            autocomplete="tel"
-          />
-
-          <label>Dirección de envío</label><br />
-          <input
-            name="direccion"
+            name="telefono"
+            type="tel"
             required
-            class="form-input"
+            inputmode="numeric"
+            maxlength="12"
+            autocomplete="tel"
+            placeholder="Ej: 916-555-1234"
+            value="{{ request.POST.telefono|default:'' }}"
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
+          />
+          <p style="margin: -2px 0 10px; font-size: 12px; color: #6b7280">
+            Escribe tu número (se formatea automáticamente).
+          </p>
+
+          <label for="direccion">Dirección de envío</label><br />
+          <input
+            id="direccion"
+            name="direccion"
+            type="text"
+            required
             autocomplete="street-address"
+            placeholder="Ej: 123 Main St, Sacramento"
+            value="{{ request.POST.direccion|default:'' }}"
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
           />
 
-          <label>Mensaje (opcional)</label><br />
-          <textarea name="mensaje" rows="3" class="form-input"></textarea>
-
-          <button
-            type="submit"
-            class="btn btn-primary btn-cta"
-            style="margin-top: 12px"
+          <label for="mensaje">Mensaje (opcional)</label><br />
+          <textarea
+            id="mensaje"
+            name="mensaje"
+            rows="3"
+            placeholder="Ej: Casa color azul / tocar timbre / etc."
+            style="
+              width: 100%;
+              padding: 12px;
+              border-radius: 12px;
+              border: 1px solid #e5e7eb;
+              margin: 8px 0;
+            "
           >
+{{ request.POST.mensaje|default:'' }}</textarea
+          >
+
+          <button type="submit" style="margin-top: 12px">
             Confirmar pedido
           </button>
         </form>
 
         {% else %}
         <p>No hay productos en tu carrito.</p>
-        <a href="{% url 'catalogo' %}" class="btn">Volver al catálogo</a>
+        <a href="{% url 'catalogo' %}">Volver al catálogo</a>
         {% endif %}
       </main>
     </div>
 
-    <!-- ===================== -->
-    <!-- JS: Teléfono solo números + formato (###) ###-#### -->
-    <!-- ===================== -->
+    <!-- ✅ Autoformato teléfono: 916-555-1234 (máx 10 dígitos reales) -->
     <script>
-      const telInput = document.getElementById("telefono");
+      document.addEventListener("DOMContentLoaded", function () {
+        const telInput = document.getElementById("telefono");
+        if (!telInput) return;
 
-      if (telInput) {
         telInput.addEventListener("input", function (e) {
-          // 1) Quitar todo lo que no sea número
-          let numbers = e.target.value.replace(/\D/g, "");
+          // Solo números
+          let digits = e.target.value.replace(/\D/g, "");
 
-          // 2) Limitar a 10 dígitos (USA)
-          numbers = numbers.substring(0, 10);
+          // Máximo 10 dígitos
+          digits = digits.substring(0, 10);
 
-          // 3) Formatear (###) ###-####
-          let formatted = "";
+          // Formato 3-3-4
+          let formatted = digits;
 
-          if (numbers.length === 0) {
-            formatted = "";
-          } else if (numbers.length < 4) {
-            formatted = `(${numbers}`;
-          } else if (numbers.length < 7) {
-            formatted = `(${numbers.slice(0, 3)}) ${numbers.slice(3)}`;
-          } else {
-            formatted = `(${numbers.slice(0, 3)}) ${numbers.slice(3, 6)}-${numbers.slice(6)}`;
+          if (digits.length > 6) {
+            formatted =
+              digits.substring(0, 3) +
+              "-" +
+              digits.substring(3, 6) +
+              "-" +
+              digits.substring(6);
+          } else if (digits.length > 3) {
+            formatted = digits.substring(0, 3) + "-" + digits.substring(3);
           }
 
           e.target.value = formatted;
         });
-      }
+      });
     </script>
   </body>
 </html>

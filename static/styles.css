@@ -583,53 +583,133 @@ a[role="button"]{
   color: #fff !important;
 }
 
-/* Botón primario verde (sí debe ir blanco) */
-.btn-primary{
-  color: #fff !important;
-}
-
-/* ===============================
-   HELPERS Y BOTONES EXTRA (AÑADIDO)
-=============================== */
-
-/* Helpers de layout */
-.text-center{
+/* =========================
+   Mensaje para inducir a subir ticket (envío)
+========================= */
+.mensaje-envio{
+  background: #ecfdf5;
+  border: 1px solid #16a34a;
+  color: #065f46;
+  padding: 10px 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  margin: 12px 0;
   text-align: center;
 }
-.mt-24{
-  margin-top: 24px;
+
+.mensaje-envio{
+  box-shadow: 0 6px 16px rgba(0,0,0,0.08);
 }
 
-/* CTA extra (más llamativo) */
-.btn-cta{
-  box-shadow: 0 10px 25px rgba(34,197,94,0.40);
-}
-.btn-cta:hover{
-  box-shadow: 0 16px 40px rgba(34,197,94,0.50);
+/* ===== Venta inteligente (claridad) ===== */
+.smart-sale{
+  display: block; /* <- en bloque para evitar amontonamiento */
 }
 
-/* Botón peligro (para Quitar) */
-.btn-danger{
-  background: #ef4444;
-  color: #fff !important;
-  border-color: rgba(239,68,68,0.45);
-}
-.btn-danger:hover{
-  background: #dc2626;
-  border-color: rgba(239,68,68,0.65);
+.smart-sale__row{
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.form-input{
+.smart-sale__badge{
+  display: inline-block;
+  margin-top: 8px;   /* separación visual */
+}
+
+.smart-sale{
+  border-radius: 14px;
+  border: 1px solid rgba(22,163,74,0.35);
+  padding: 12px 14px;
+  margin: 14px 0;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.06);
+}
+
+.smart-sale__row{
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.smart-sale__icon{
+  font-size: 18px;
+  line-height: 1;
+}
+
+.smart-sale--falta{
+  background: #ecfdf5;
+  color: #065f46;
+}
+
+.smart-sale--ok{
+  background: #16a34a;
+  color: #ffffff;
+  border-color: rgba(22,163,74,0.65);
+}
+
+.progress{
   width: 100%;
-  padding: 12px;
-  border-radius: 12px;
-  border: 1px solid #e5e7eb;
-  margin: 8px 0;
-  font-size: 15px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(17,24,39,0.10);
+  overflow: hidden;
 }
 
-.form-input:focus{
-  outline: none;
-  border-color: #16a34a;
-  box-shadow: 0 0 0 2px rgba(22,163,74,0.15);
+.progress__bar{
+  height: 100%;
+  border-radius: 999px;
+  background: rgba(22,163,74,0.85);
+}
+
+.smart-sale--ok .progress{
+  background: rgba(255,255,255,0.25);
+}
+.smart-sale--ok .progress__bar{
+  background: rgba(255,255,255,0.95);
+}
+
+.progress__meta{
+  display: flex;
+  justify-content: space-between;
+  margin-top: 6px;
+  font-size: 12px;
+  font-weight: 800;
+  opacity: 0.9;
+}
+
+/* ===== Barra progreso PREMIUM ===== */
+
+.progress{
+  width: 100%;
+  height: 8px;                     /* más fina = más pro */
+  border-radius: 999px;
+  background: rgba(17,24,39,0.10);
+  overflow: hidden;
+  position: relative;
+}
+
+.progress__bar{
+  height: 100%;
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    #22c55e,
+    #16a34a
+  );
+  transition: width 0.45s ease;    /* animación suave */
+}
+
+/* estado logrado */
+.smart-sale--ok .progress{
+  background: rgba(255,255,255,0.25);
+}
+
+.smart-sale--ok .progress__bar{
+  background: linear-gradient(
+    90deg,
+    #bbf7d0,
+    #ffffff
+  );
 }

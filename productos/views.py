@@ -23,6 +23,16 @@ def _get_cart(session):
         session["cart"] = cart
     return cart
 
+def _cart_count(cart) -> int:
+    """Total de unidades en el carrito (suma de qty)."""
+    total = 0
+    for _, data in cart.items():
+        try:
+            total += int(data.get("qty", 0))
+        except (TypeError, ValueError):
+            pass
+    return total
+
 
 def _cart_items_and_total(cart):
     """
@@ -63,36 +73,32 @@ def _cart_items_and_total(cart):
     return items, subtotal
 
 
-# =========================
-# Helper: cálculo de envío
-# =========================
-def calcular_envio(subtotal: Decimal, tiene_items: bool) -> Decimal:
+def _calcular_envio_por_subtotal(items, subtotal: Decimal) -> Decimal:
     """
-    Regla:
-    - Sin items -> envío 0
-    - Subtotal >= 20 -> envío 3
-    - Subtotal < 20 -> envío 6
+    Regla de envío:
+    - carrito vacío -> 0
+    - subtotal >= 20 -> 3
+    - subtotal < 20 -> 6
     """
-    if not tiene_items:
+    if not items:
         return Decimal("0.00")
-
-    if subtotal >= Decimal("20.00"):
-        return Decimal("3.00")
-
-    return Decimal("6.00")
+    return Decimal("3.00") if subtotal >= Decimal("20.00") else Decimal("6.00")
 
 
-def _mensaje_envio(subtotal: Decimal) -> str:
+def _mensaje_envio_por_subtotal(items, subtotal: Decimal) -> str:
     """
-    Mensaje para empujar ticket promedio:
-    - Si falta para llegar a 20 -> mensaje con faltante
-    - Si ya llegó a 20 -> mensaje de logro
+    Mensaje claro y persuasivo (venta inteligente).
     """
-    objetivo = Decimal("20.00")
-    if subtotal < objetivo:
-        faltante = (objetivo - subtotal).quantize(Decimal("0.01"))
-        return f"🚚 ¡Agrega ${faltante} más y reduce tu envío a solo $3!"
-    return "✅ ¡Genial! Ya calificas para envío reducido de $3."
+    if not items:
+        return ""
+
+    meta = Decimal("20.00")
+
+    if subtotal < meta:
+        falta = (meta - subtotal).quantize(Decimal("0.01"))
+        return f"💡 Agrega ${falta} más y tu envío baja a solo $3"
+
+    return "🎉 ¡Ya tienes envío por solo $3!"
 
 
 # =========================
@@ -122,12 +128,18 @@ def _filter_by_categoria(nombre_categoria: str):
 
 
 def catalogo(request):
+    # 🛒 obtener carrito actual
+    cart = _get_cart(request.session)
+    cart_count = _cart_count(cart)
+
+    # productos
     agua = _filter_by_categoria("Agua")
     leche = _filter_by_categoria("Leche")
 
     return render(request, "productos/catalogo.html", {
         "agua": agua,
         "leche": leche,
+        "cart_count": cart_count,  # 👈 IMPORTANTE
     })
 
 
@@ -161,10 +173,30 @@ def cart_detail(request):
     cart = _get_cart(request.session)
     items, subtotal = _cart_items_and_total(cart)
 
-    envio = calcular_envio(subtotal, bool(items))
+    envio = _calcular_envio_por_subtotal(items, subtotal)
     total_con_envio = subtotal + envio
 
-    mensaje_envio = _mensaje_envio(subtotal) if items else ""
+    # Mensaje venta inteligente
+    mensaje_envio = _mensaje_envio_por_subtotal(items, subtotal)
+
+    # Tipo para estilos (falta / ok)
+    mensaje_envio_tipo = ""
+    if items and subtotal < Decimal("20.00"):
+        mensaje_envio_tipo = "falta"
+    elif items:
+        mensaje_envio_tipo = "ok"
+
+    # Barra de progreso hacia $20
+    meta = Decimal("20.00")
+    progreso_pct = 0
+    falta = Decimal("0.00")
+
+    if items:
+        if subtotal < meta:
+            falta = (meta - subtotal).quantize(Decimal("0.01"))
+            progreso_pct = int((subtotal / meta) * 100)
+        else:
+            progreso_pct = 100
 
     return render(request, "productos/carrito.html", {
         "items": items,
@@ -172,6 +204,9 @@ def cart_detail(request):
         "envio": envio,
         "total_con_envio": total_con_envio,
         "mensaje_envio": mensaje_envio,
+        "mensaje_envio_tipo": mensaje_envio_tipo,
+        "progreso_pct": progreso_pct,
+        "falta": falta,
     })
 
 
@@ -232,9 +267,8 @@ def checkout(request):
     if not items:
         return redirect("catalogo")
 
-    envio = calcular_envio(subtotal, bool(items))
+    envio = _calcular_envio_por_subtotal(items, subtotal)
     total = subtotal + envio
-    mensaje_envio = _mensaje_envio(subtotal)
 
     horarios = {
         "lv": "Lunes a viernes: 4:00 pm a 7:30 pm",
@@ -243,29 +277,39 @@ def checkout(request):
 
     if request.method == "POST":
         nombre = request.POST.get("nombre", "").strip()
-        telefono = request.POST.get("telefono", "").strip()
+        telefono_raw = request.POST.get("telefono", "").strip()
         direccion = request.POST.get("direccion", "").strip()
-        mensaje = request.POST.get("mensaje", "").strip()
+        mensaje = request.POST.get("mensaje", "").strip()  # ✅ opcional
 
-        # Validación mínima MVP
-        if not (nombre and telefono and direccion):
+        # ✅ Campos obligatorios (mensaje NO)
+        if not nombre or not telefono_raw or not direccion:
             return render(request, "productos/checkout.html", {
                 "items": items,
                 "subtotal": subtotal,
                 "envio": envio,
                 "total": total,
                 "horarios": horarios,
-                "mensaje_envio": mensaje_envio,
                 "error": "Por favor llena nombre, teléfono y dirección.",
             })
 
-        # (opcional recomendado) limpiar teléfono a solo números antes de guardar
-        telefono_solo_numeros = "".join(ch for ch in telefono if ch.isdigit())
+        # ✅ Limpia teléfono a solo dígitos (permite guiones/espacios/paréntesis)
+        telefono = "".join(ch for ch in telefono_raw if ch.isdigit())
 
-        # 1) Crear Pedido
+        # ✅ Debe tener EXACTAMENTE 10 dígitos
+        if len(telefono) != 10:
+            return render(request, "productos/checkout.html", {
+                "items": items,
+                "subtotal": subtotal,
+                "envio": envio,
+                "total": total,
+                "horarios": horarios,
+                "error": "El teléfono debe tener exactamente 10 dígitos.",
+            })
+
+        # 1) Crear Pedido (token se genera solo en models.py con save())
         pedido = Pedido.objects.create(
             nombre=nombre,
-            telefono=telefono_solo_numeros,
+            telefono=telefono,  # ✅ guardamos limpio
             direccion_envio=direccion,
             mensaje=mensaje,
             subtotal=subtotal,
@@ -305,7 +349,6 @@ def checkout(request):
         "envio": envio,
         "total": total,
         "horarios": horarios,
-        "mensaje_envio": mensaje_envio,
         "error": "",
     })
 

@@ -41,33 +41,52 @@
                   margin: 8px 0;
                 "
               />
-              <button type="submit" class="btn">Actualizar</button>
+              <button type="submit">Actualizar</button>
             </form>
 
             <p><strong>Subtotal:</strong> ${{ it.subtotal }}</p>
 
             <form method="post" action="{% url 'cart_remove' it.producto.id %}">
               {% csrf_token %}
-              <button type="submit" class="btn btn-danger">Quitar</button>
+              <button type="submit">Quitar</button>
             </form>
           </article>
           {% endfor %}
         </div>
 
         <hr />
+
         <p><strong>Subtotal:</strong> ${{ total }}</p>
         <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
-        <p><strong>Total:</strong> ${{ total_con_envio }}</p>
 
-        <!-- 🚀 MENSAJE PARA SUBIR TICKET -->
+        <!-- 💰 VENTA INTELIGENTE (clara y separada) -->
         {% if mensaje_envio %}
-        <p style="font-weight: 800; color: #16a34a; margin-top: 10px">
-          💡 {{ mensaje_envio }}
-        </p>
+        <div class="smart-sale smart-sale--{{ mensaje_envio_tipo }}">
+          <div class="smart-sale__row">
+            <span class="smart-sale__icon">
+              {% if mensaje_envio_tipo == "ok" %}🎉{% else %}💡{% endif %}
+            </span>
+            <span class="smart-sale__text">
+              {% if mensaje_envio_tipo == "falta" %} Agrega
+              <strong>${{ falta }}</strong> más para obtener envío por solo
+              <strong>$3</strong> {% else %} ¡Ya tienes envío por solo
+              <strong>$3</strong>! {% endif %}
+            </span>
+          </div>
+
+          <div class="progress">
+            <div
+              class="progress__bar"
+              style="width: {{ progreso_pct }}%;"
+            ></div>
+          </div>
+        </div>
         {% endif %}
 
+        <p><strong>Total:</strong> ${{ total_con_envio }}</p>
+
         <p>
-          <a href="{% url 'checkout' %}" class="btn btn-primary">
+          <a href="{% url 'checkout' %}" style="font-weight: 800">
             Confirmar pedido
           </a>
         </p>
