@@ -63,6 +63,10 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # ✅ Cloudinary (MEDIA)
+    "cloudinary_storage",
+    "cloudinary",
+
     "productos",
 ]
 
@@ -156,8 +160,12 @@ STATIC_ROOT = BASE_DIR / "staticfiles"
 # ✅ WhiteNoise (recomendado para producción)
 STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
 
+# =========================
+# MEDIA (Cloudinary)
+# =========================
+DEFAULT_FILE_STORAGE = "cloudinary_storage.storage.MediaCloudinaryStorage"
 MEDIA_URL = "/media/"
-MEDIA_ROOT = BASE_DIR / "media"
+
 
 
 # =========================
