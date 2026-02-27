@@ -713,3 +713,55 @@ a[role="button"]{
     #ffffff
   );
 }
+
+/* =========================
+   Botón rosa pastel
+========================= */
+.btn-seguir {
+  background: #f9a8d4;
+  color: #1f2937;
+  border: 1px solid #f472b6;
+}
+
+.btn-seguir:hover {
+  background: #f472b6;
+  color: white;
+  transform: translateY(-1px);
+}
+
+/* =========================
+   Botón verde confirmar
+========================= */
+.btn-confirmar {
+  background: #22c55e;
+  color: white;
+  border: 1px solid #16a34a;
+}
+
+.btn-confirmar:hover {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+/* 🔥 Fuerza colores de botones carrito */
+
+.btn.btn-seguir{
+  background:#f9a8d4 !important;
+  color:#1f2937 !important;
+  border:1px solid #f472b6 !important;
+}
+
+.btn.btn-seguir:hover{
+  background:#f472b6 !important;
+  color:#fff !important;
+}
+
+.btn.btn-confirmar{
+  background:#22c55e !important;
+  color:#fff !important;
+  border:1px solid #16a34a !important;
+}
+
+.btn.btn-confirmar:hover{
+  background:#16a34a !important;
+}

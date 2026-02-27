@@ -12,8 +12,13 @@
       <header class="header">
         <h1 class="titulo-marca">Carrito</h1>
         <nav class="nav">
-          <a href="{% url 'catalogo' %}">Seguir comprando</a>
-          <a href="{% url 'checkout' %}">Confirmar pedido</a>
+          <a href="{% url 'catalogo' %}" class="btn btn-seguir">
+            Elegir más sabores
+          </a>
+
+          <a href="{% url 'checkout' %}" class="btn btn-confirmar">
+            Confirmar pedido
+          </a>
         </nav>
       </header>
 
