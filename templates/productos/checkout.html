@@ -4,17 +4,24 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Checkout - Bolis Naturales</title>
+    <title>Resumen - Bolis Naturales</title>
     <link rel="stylesheet" href="{% static 'styles.css' %}" />
   </head>
 
   <body>
     <div class="container">
       <header class="header">
-        <h1 class="titulo-marca">Checkout</h1>
+        <h1 class="titulo-marca">Resumen</h1>
+
         <nav class="nav">
-          <a href="{% url 'catalogo' %}">Seguir comprando</a>
-          <a href="{% url 'cart_detail' %}">Carrito</a>
+          <a href="{% url 'catalogo' %}" class="btn btn-seguir">
+            Seguir comprando
+          </a>
+
+          <!-- ✅ Botón en header que envía el form -->
+          <button type="submit" form="form-pedido" class="btn btn-confirmar">
+            Confirmar pedido
+          </button>
         </nav>
       </header>
 
@@ -25,34 +32,19 @@
         </p>
         {% endif %}
 
-        <h2>Tu pedido</h2>
-
         {% if items %}
-        <div class="breakfast-grid" style="grid-template-columns: 1fr">
-          {% for it in items %}
-          <article>
-            <h3>{{ it.producto.nombre }}</h3>
-            <p>Cantidad: <strong>{{ it.qty }}</strong></p>
-            <p>Subtotal: <strong>${{ it.subtotal }}</strong></p>
-          </article>
-          {% endfor %}
-        </div>
 
-        <hr />
-        <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
-        <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
-        <p><strong>Total:</strong> ${{ total }}</p>
-
-        <hr />
-        <h2>Horario de reparto</h2>
+        <!-- ✅ ARRIBA: INGRESA TUS DATOS -->
+        <h2>Ingresa tus datos</h2>
 
         <p>
-          <strong>Horarios:</strong><br />
+          <strong>Horarios de reparto:</strong><br />
           {{ horarios.lv }}<br />
           {{ horarios.sd }}
         </p>
 
-        <form method="post" novalidate>
+        <!-- ✅ id para que el botón del header lo pueda enviar -->
+        <form id="form-pedido" method="post">
           {% csrf_token %}
 
           <label for="nombre">Nombre</label><br />
@@ -127,13 +119,29 @@
               border: 1px solid #e5e7eb;
               margin: 8px 0;
             "
-          >
-{{ request.POST.mensaje|default:'' }}</textarea
-          >
+          >{{ request.POST.mensaje|default:'' }}</textarea>
 
-          <button type="submit" style="margin-top: 12px">
-            Confirmar pedido
-          </button>
+          <hr />
+
+          <!-- 📦 TU PEDIDO -->
+          <h2>Tu pedido</h2>
+
+          <div class="breakfast-grid" style="grid-template-columns: 1fr">
+            {% for it in items %}
+            <article>
+              <h3>{{ it.producto.nombre }}</h3>
+              <p>Cantidad: <strong>{{ it.qty }}</strong></p>
+              <p>Subtotal: <strong>${{ it.subtotal }}</strong></p>
+            </article>
+            {% endfor %}
+          </div>
+
+          <hr />
+
+          <!-- 💰 TOTALES -->
+          <p><strong>Subtotal:</strong> ${{ subtotal }}</p>
+          <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
+          <p><strong>Total:</strong> ${{ total }}</p>
         </form>
 
         {% else %}
@@ -143,20 +151,16 @@
       </main>
     </div>
 
-    <!-- ✅ Autoformato teléfono: 916-555-1234 (máx 10 dígitos reales) -->
+    <!-- ✅ Autoformato teléfono -->
     <script>
       document.addEventListener("DOMContentLoaded", function () {
         const telInput = document.getElementById("telefono");
         if (!telInput) return;
 
         telInput.addEventListener("input", function (e) {
-          // Solo números
           let digits = e.target.value.replace(/\D/g, "");
-
-          // Máximo 10 dígitos
           digits = digits.substring(0, 10);
 
-          // Formato 3-3-4
           let formatted = digits;
 
           if (digits.length > 6) {
