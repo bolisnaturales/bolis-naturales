@@ -90,11 +90,15 @@
 
         <p><strong>Total:</strong> ${{ total_con_envio }}</p>
 
-        <p>
-          <a href="{% url 'checkout' %}" style="font-weight: 800">
+        <div style="margin-top: 14px">
+          <a
+            href="{% url 'checkout' %}"
+            class="btn btn-confirmar"
+            style="width: 100%; display: inline-block; text-align: center"
+          >
             Confirmar pedido
           </a>
-        </p>
+        </div>
 
         {% else %}
         <p>Tu carrito está vacío.</p>
