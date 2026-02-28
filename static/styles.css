@@ -765,3 +765,29 @@ a[role="button"]{
 .btn.btn-confirmar:hover{
   background:#16a34a !important;
 }
+
+/* ========================================
+   FIX MÓVIL — inputs estables y sin zoom
+======================================== */
+
+input,
+textarea,
+select {
+  font-size: 16px !important;
+}
+
+input,
+textarea {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+input,
+textarea {
+  -webkit-text-size-adjust: 100%;
+}
+
+html, body {
+  overflow-x: hidden;
+}
