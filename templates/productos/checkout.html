@@ -30,9 +30,7 @@
         <p style="font-weight: 800; color: #b91c1c; margin-bottom: 12px">
           {{ error }}
         </p>
-        {% endif %}
-
-        {% if items %}
+        {% endif %} {% if items %}
 
         <!-- ✅ ARRIBA: INGRESA TUS DATOS -->
         <h2>Ingresa tus datos</h2>
@@ -119,7 +117,9 @@
               border: 1px solid #e5e7eb;
               margin: 8px 0;
             "
-          >{{ request.POST.mensaje|default:'' }}</textarea>
+          >
+{{ request.POST.mensaje|default:'' }}</textarea
+          >
 
           <hr />
 
@@ -143,6 +143,18 @@
           <p><strong>Envío:</strong> ${{ envio }} (costo adicional)</p>
           <p><strong>Total:</strong> ${{ total }}</p>
         </form>
+
+        <!-- ✅ Botón al final (fuera del form) -->
+        <div style="margin-top: 14px">
+          <button
+            type="submit"
+            form="form-pedido"
+            class="btn btn-confirmar"
+            style="width: 100%"
+          >
+            Confirmar pedido
+          </button>
+        </div>
 
         {% else %}
         <p>No hay productos en tu carrito.</p>
