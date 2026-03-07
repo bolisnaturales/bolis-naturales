@@ -251,9 +251,9 @@ def checkout(request):
     total = subtotal + envio
 
     horarios = {
-        "lv": "Lunes a viernes: 4:00 pm a 6:30 pm",
-        "sd": "Sábado y domingo: 10:00 am a 2:00 pm",
-    }
+    "lv": "Lunes a viernes: 4:00 pm a 6:30 pm",
+    "sd": "Sábado y domingo: 11:00 am a 3:00 pm",
+}
 
     if request.method == "POST":
         nombre = request.POST.get("nombre", "").strip()
