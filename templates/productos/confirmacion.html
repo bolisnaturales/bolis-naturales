@@ -23,6 +23,23 @@
         <h2 style="margin-top: 10px">¡GRACIAS, {{ pedido.nombre|upper }}!</h2>
 
         <p>Tu pedido fue registrado correctamente.</p>
+        <div
+          style="
+            margin-top: 14px;
+            padding: 14px;
+            border-radius: 12px;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
+          "
+        >
+          <p style="margin: 0; font-weight: 600">
+            ⏳ Tu pedido está siendo preparado
+          </p>
+
+          <p style="margin: 4px 0 0 0">
+            🚚 Será entregado dentro del horario de reparto.
+          </p>
+        </div>
 
         <!-- ===================== -->
         <!-- Resumen del pedido -->
@@ -77,9 +94,9 @@
           </p>
 
           <p>
-            <strong>Horarios:</strong><br />
-            Lunes a viernes: 4:00 pm a 6:30 pm<br />
-            Sábado y domingo: 10:00 am a 2:00 pm
+            <strong>Horarios de reparto:</strong><br />
+            {{ horarios.lv }}<br />
+            {{ horarios.sd }}
           </p>
         </div>
       </main>
