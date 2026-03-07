@@ -10,21 +10,14 @@ from .models import Producto, Pedido, PedidoItem
 # Helpers (carrito en sesión)
 # =========================
 def _get_cart(session):
-    """
-    Estructura del carrito en sesión:
-    session["cart"] = {
-      "1": {"qty": 2},
-      "8": {"qty": 1},
-    }
-    """
     cart = session.get("cart")
     if cart is None:
         cart = {}
         session["cart"] = cart
     return cart
 
+
 def _cart_count(cart) -> int:
-    """Total de unidades en el carrito (suma de qty)."""
     total = 0
     for _, data in cart.items():
         try:
@@ -35,11 +28,6 @@ def _cart_count(cart) -> int:
 
 
 def _cart_items_and_total(cart):
-    """
-    Devuelve:
-    - items: [{producto, qty, subtotal}, ...]
-    - subtotal: Decimal
-    """
     ids = []
     for pid in cart.keys():
         try:
@@ -67,28 +55,19 @@ def _cart_items_and_total(cart):
             "subtotal": item_subtotal,
         })
 
-    # orden opcional por nombre (solo para que se vea bonito)
     items.sort(key=lambda x: x["producto"].nombre.lower())
 
     return items, subtotal
 
 
 def _calcular_envio_por_subtotal(items, subtotal: Decimal) -> Decimal:
-    """
-    Regla de envío:
-    - carrito vacío -> 0
-    - subtotal >= 20 -> 3
-    - subtotal < 20 -> 6
-    """
     if not items:
         return Decimal("0.00")
+
     return Decimal("3.00") if subtotal >= Decimal("20.00") else Decimal("6.00")
 
 
 def _mensaje_envio_por_subtotal(items, subtotal: Decimal) -> str:
-    """
-    Mensaje claro y persuasivo (venta inteligente).
-    """
     if not items:
         return ""
 
@@ -105,22 +84,14 @@ def _mensaje_envio_por_subtotal(items, subtotal: Decimal) -> str:
 # Catálogo
 # =========================
 def _filter_by_categoria(nombre_categoria: str):
-    """
-    Filtra productos por categoría SIN romperse,
-    funcione si Producto.categoria es:
-    - ForeignKey (categoria__nombre)
-    - CharField/TextField (categoria)
-    """
     field = Producto._meta.get_field("categoria")
 
-    # Si es texto (CharField/TextField), filtra por el campo directo
     if isinstance(field, (CharField, TextField)):
         return Producto.objects.filter(
             categoria__iexact=nombre_categoria,
             activo=True
         ).order_by("id")
 
-    # Si NO es texto, asumimos relación (ForeignKey) con atributo "nombre"
     return Producto.objects.filter(
         categoria__nombre__iexact=nombre_categoria,
         activo=True
@@ -128,28 +99,23 @@ def _filter_by_categoria(nombre_categoria: str):
 
 
 def catalogo(request):
-    # 🛒 obtener carrito actual
     cart = _get_cart(request.session)
     cart_count = _cart_count(cart)
 
-    # productos
     agua = _filter_by_categoria("Agua")
     leche = _filter_by_categoria("Leche")
 
     return render(request, "productos/catalogo.html", {
         "agua": agua,
         "leche": leche,
-        "cart_count": cart_count,  # 👈 IMPORTANTE
+        "cart_count": cart_count,
     })
 
 
 # =========================
-# Carrito (agregar / ver / actualizar / quitar)
+# Carrito
 # =========================
 def add_to_cart(request, producto_id):
-    """
-    POST -> agrega 1 unidad al carrito y redirige al carrito.
-    """
     if request.method != "POST":
         return redirect("catalogo")
 
@@ -158,10 +124,19 @@ def add_to_cart(request, producto_id):
     cart = _get_cart(request.session)
     pid = str(producto.id)
 
+    qty_actual = int(cart.get(pid, {}).get("qty", 0))
+
+    # No permitir agregar más de lo disponible
+    if qty_actual >= producto.stock:
+        request.session["cart_msg"] = (
+            f"Solo hay {producto.stock} unidades disponibles de {producto.nombre}."
+        )
+        return redirect("cart_detail")
+
     if pid not in cart:
         cart[pid] = {"qty": 1}
     else:
-        cart[pid]["qty"] = int(cart[pid].get("qty", 0)) + 1
+        cart[pid]["qty"] = qty_actual + 1
 
     request.session["cart"] = cart
     request.session.modified = True
@@ -176,17 +151,14 @@ def cart_detail(request):
     envio = _calcular_envio_por_subtotal(items, subtotal)
     total_con_envio = subtotal + envio
 
-    # Mensaje venta inteligente
     mensaje_envio = _mensaje_envio_por_subtotal(items, subtotal)
 
-    # Tipo para estilos (falta / ok)
     mensaje_envio_tipo = ""
     if items and subtotal < Decimal("20.00"):
         mensaje_envio_tipo = "falta"
     elif items:
         mensaje_envio_tipo = "ok"
 
-    # Barra de progreso hacia $20
     meta = Decimal("20.00")
     progreso_pct = 0
     falta = Decimal("0.00")
@@ -198,27 +170,30 @@ def cart_detail(request):
         else:
             progreso_pct = 100
 
+    # ✅ mensaje temporal del carrito
+    cart_msg = request.session.pop("cart_msg", "")
+
     return render(request, "productos/carrito.html", {
         "items": items,
-        "total": subtotal,  # tu template carrito.html usa "total" como subtotal
+        "total": subtotal,
         "envio": envio,
         "total_con_envio": total_con_envio,
         "mensaje_envio": mensaje_envio,
         "mensaje_envio_tipo": mensaje_envio_tipo,
         "progreso_pct": progreso_pct,
         "falta": falta,
+        "cart_msg": cart_msg,
     })
 
 
 def cart_update(request, producto_id):
-    """
-    POST -> actualiza cantidad.
-    """
     if request.method != "POST":
         return redirect("cart_detail")
 
     cart = _get_cart(request.session)
     pid = str(producto_id)
+
+    producto = get_object_or_404(Producto, id=producto_id, activo=True)
 
     try:
         qty = int(request.POST.get("qty", "1"))
@@ -228,6 +203,14 @@ def cart_update(request, producto_id):
     if qty <= 0:
         cart.pop(pid, None)
     else:
+        # ✅ No permitir más de lo disponible
+        if qty > producto.stock:
+            qty = producto.stock
+            request.session["cart_msg"] = (
+                f"Solo hay {producto.stock} unidades disponibles de {producto.nombre}. "
+                f"Ajustamos tu carrito."
+            )
+
         if pid in cart:
             cart[pid]["qty"] = qty
         else:
@@ -240,9 +223,6 @@ def cart_update(request, producto_id):
 
 
 def cart_remove(request, producto_id):
-    """
-    POST -> quita producto del carrito.
-    """
     if request.method != "POST":
         return redirect("cart_detail")
 
@@ -258,7 +238,7 @@ def cart_remove(request, producto_id):
 
 
 # =========================
-# Checkout (guardar pedido real)
+# Checkout
 # =========================
 def checkout(request):
     cart = _get_cart(request.session)
@@ -279,9 +259,9 @@ def checkout(request):
         nombre = request.POST.get("nombre", "").strip()
         telefono_raw = request.POST.get("telefono", "").strip()
         direccion = request.POST.get("direccion", "").strip()
-        mensaje = request.POST.get("mensaje", "").strip()  # ✅ opcional
+        mensaje = request.POST.get("mensaje", "").strip()
 
-        # ✅ Campos obligatorios (mensaje NO)
+        # Campos obligatorios
         if not nombre or not telefono_raw or not direccion:
             return render(request, "productos/checkout.html", {
                 "items": items,
@@ -292,10 +272,8 @@ def checkout(request):
                 "error": "Por favor llena nombre, teléfono y dirección.",
             })
 
-        # ✅ Limpia teléfono a solo dígitos (permite guiones/espacios/paréntesis)
         telefono = "".join(ch for ch in telefono_raw if ch.isdigit())
 
-        # ✅ Debe tener EXACTAMENTE 10 dígitos
         if len(telefono) != 10:
             return render(request, "productos/checkout.html", {
                 "items": items,
@@ -306,10 +284,25 @@ def checkout(request):
                 "error": "El teléfono debe tener exactamente 10 dígitos.",
             })
 
-        # 1) Crear Pedido (token se genera solo en models.py con save())
+        # ✅ Validar stock antes de confirmar
+        for it in items:
+            p = it["producto"]
+            qty = it["qty"]
+
+            if p.stock < qty:
+                return render(request, "productos/checkout.html", {
+                    "items": items,
+                    "subtotal": subtotal,
+                    "envio": envio,
+                    "total": total,
+                    "horarios": horarios,
+                    "error": f"No hay suficiente stock de {p.nombre}. Disponible: {p.stock}.",
+                })
+
+        # 1️⃣ Crear pedido
         pedido = Pedido.objects.create(
             nombre=nombre,
-            telefono=telefono,  # ✅ guardamos limpio
+            telefono=telefono,
             direccion_envio=direccion,
             mensaje=mensaje,
             subtotal=subtotal,
@@ -318,7 +311,7 @@ def checkout(request):
             estado="CONFIRMADO",
         )
 
-        # 2) Crear PedidoItems (snapshot)
+        # 2️⃣ Crear items y descontar stock
         for it in items:
             p = it["producto"]
             qty = it["qty"]
@@ -333,11 +326,14 @@ def checkout(request):
                 subtotal=sub,
             )
 
-        # 3) Limpiar carrito
+            p.stock -= qty
+            p.save()
+
+        # 3️⃣ Limpiar carrito
         request.session.pop("cart", None)
         request.session.modified = True
 
-        # 4) Confirmación
+        # 4️⃣ Confirmación
         return render(request, "productos/confirmacion.html", {
             "pedido": pedido,
             "horarios": horarios,
@@ -354,10 +350,11 @@ def checkout(request):
 
 
 # =========================
-# Estado del pedido (privado con token)
+# Estado del pedido
 # =========================
 def pedido_detalle(request, pedido_id):
     token = request.GET.get("t", "").strip()
+
     pedido = get_object_or_404(Pedido, id=pedido_id, token=token)
     items = PedidoItem.objects.filter(pedido=pedido).order_by("id")
 

@@ -791,3 +791,13 @@ textarea {
 html, body {
   overflow-x: hidden;
 }
+
+.cart-warning{
+  background: #fff7ed;
+  border: 1px solid #fdba74;
+  color: #9a3412;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 14px;
+  font-weight: 600;
+}

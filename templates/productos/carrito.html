@@ -23,8 +23,16 @@
       </header>
 
       <main>
-        {% if items %}
-        <div class="breakfast-grid">
+      <main>
+
+  {% if cart_msg %}
+  <p class="cart-warning">
+    {{ cart_msg }}
+  </p>
+  {% endif %}
+
+  {% if items %}
+  <div class="breakfast-grid">
           {% for it in items %}
           <article>
             <h3>{{ it.producto.nombre }}</h3>
