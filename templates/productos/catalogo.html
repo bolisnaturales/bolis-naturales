@@ -70,10 +70,13 @@
                 {% if p.stock == 0 %}
                 <p style="color: #dc2626; font-weight: 700">Agotado</p>
 
+                {% elif p.stock <= 3 %}
+                <p style="color: #dc2626; font-weight: 700">
+                  ⏳ Solo quedan {{ p.stock }}
+                </p>
+
                 {% elif p.stock <= 5 %}
                 <p style="color: #f59e0b; font-weight: 700">Pocas unidades</p>
-                {% endif %} {% if p.descripcion %}
-                <p class="product-desc">{{ p.descripcion }}</p>
                 {% endif %}
               </div>
 
