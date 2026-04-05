@@ -252,7 +252,7 @@ def checkout(request):
 
     horarios = {
     "lv": "Lunes a viernes: 4:00 pm a 6:30 pm",
-    "sd": "Sábado y domingo: 2:00 am a 4:00 pm",
+    "sd": "Sábado y domingo: 2:00 pm a 4:00 pm",
 }
 
     if request.method == "POST":
