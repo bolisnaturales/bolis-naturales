@@ -4,11 +4,11 @@ from .models import Producto, Pedido, PedidoItem
 
 @admin.register(Producto)
 class ProductoAdmin(admin.ModelAdmin):
-    list_display = ("id", "nombre", "categoria", "precio", "activo", "creado_en")
+    list_display = ("id", "nombre", "categoria", "precio", "stock", "activo")
     list_filter = ("categoria", "activo")
     search_fields = ("nombre", "descripcion")
-    list_editable = ("precio", "activo")
-    ordering = ("-creado_en",)
+    list_editable = ("precio", "stock", "activo")
+    ordering = ("-id",)
 
 
 class PedidoItemInline(admin.TabularInline):
