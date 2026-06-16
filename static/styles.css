@@ -210,6 +210,26 @@ hr{
   transform: translateY(-1px);
 }
 
+.boton-volver {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  border: 1px solid var(--border);
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: var(--card);
+
+  font-weight: 700;
+  text-decoration: none;
+
+  transition: border-color .2s ease, transform .2s ease;
+}
+
+.boton-volver:hover {
+  border-color: rgba(17,24,39,0.25);
+  transform: translateY(-1px);
+}
 /* =========================================================
    3) Anchors (ajuste fino de scroll al H2)
 ========================================================= */
