@@ -27,7 +27,7 @@
         <h1 class="titulo-marca">PEDIDO #{{ pedido.id }}</h1>
 
         <nav class="nav">
-          <a href="{% url 'catalogo' %}">Catálogo</a>
+          <a href="{% url 'catalogo' %}">Menú</a>
           <a href="{% url 'cart_detail' %}">Carrito</a>
         </nav>
       </header>
@@ -75,7 +75,7 @@
           <p><strong>Total:</strong> ${{ pedido.total }}</p>
         </section>
         <div class="text-center mt-24">
-          <a href="{% url 'catalogo' %}" class="btn"> ← Volver al catálogo </a>
+          <a href="{% url 'catalogo' %}" class="btn"> ← Volver al menú </a>
         </div>
       </main>
     </div>
