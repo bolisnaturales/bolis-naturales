@@ -189,5 +189,16 @@
     >
       <span>💬</span>
     </a>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.9.3/dist/confetti.browser.min.js"></script>
+
+    <script>
+      window.addEventListener("load", () => {
+        confetti({
+          particleCount: 50,
+          spread: 70,
+          origin: { y: 0.6 },
+        });
+      });
+    </script>
   </body>
 </html>
