@@ -367,7 +367,19 @@ section h2 {
   }
 
   :root{
-    --header-h: 410px; /* suele crecer en móvil */
+    --header-h: 410px;
+  }
+
+  .cart-nav{
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      gap:16px;
+  }
+
+  .cart-nav .btn{
+      width:65%;
+      margin:0 auto;
   }
 }
 
