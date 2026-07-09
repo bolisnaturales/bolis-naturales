@@ -765,6 +765,28 @@ a[role="button"]{
 
 /* 🔥 Fuerza colores de botones carrito */
 
+/* =========================
+   Botones base
+========================= */
+
+.btn{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+
+  padding:12px 18px;
+
+  border-radius:999px;
+
+  text-decoration:none;
+  font-weight:700;
+  font-size:1rem;
+
+  cursor:pointer;
+
+  transition:all .2s ease;
+}
+
 .btn.btn-seguir{
   background:#f9a8d4 !important;
   color:#1f2937 !important;
@@ -884,4 +906,50 @@ html, body {
     font-size:1rem;
     margin-top:-1rem;
     margin-bottom:1.5rem;
+}
+
+/* =========================
+   Navegación del carrito
+========================= */
+
+.cart-nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    margin-top:1rem;
+    margin-bottom:1.5rem;
+    flex-wrap:wrap;
+}
+
+.cart-nav .btn{
+    flex:1;
+}
+
+/* =========================
+   Encabezado del carrito
+========================= */
+
+.cart-header{
+    margin-bottom:2rem;
+}
+
+.cart-nav{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-top:1rem;
+}
+
+.cart-nav .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:1;
+    padding:12px 18px;
+    border-radius:999px;
+    text-decoration:none;
+    font-weight:700;
 }

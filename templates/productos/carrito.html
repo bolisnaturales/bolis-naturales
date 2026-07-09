@@ -9,17 +9,17 @@
   </head>
   <body>
     <div class="container">
-      <header class="header">
+      <header class="cart-header">
         <h1 class="titulo-marca">Carrito</h1>
-        <nav class="nav">
-          <a href="{% url 'catalogo' %}" class="btn btn-seguir">
-            Elegir más sabores
-          </a>
+        <nav class="cart-nav">
+  <a href="{% url 'catalogo' %}" class="btn btn-seguir">
+    ← Elegir más sabores
+  </a>
 
-          <a href="{% url 'checkout' %}" class="btn btn-confirmar">
-            Confirmar pedido
-          </a>
-        </nav>
+  <a href="{% url 'checkout' %}" class="btn btn-confirmar">
+    Confirmar pedido →
+  </a>
+</nav>
       </header>
 
       <main>
