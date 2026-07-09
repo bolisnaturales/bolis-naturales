@@ -180,11 +180,21 @@ hr{
   display: block;
 }
 
+/* Carrito arriba del título */
+.header-top{
+    width:100%;
+    display:flex;
+    justify-content:flex-end;
+    margin-bottom:.8rem;
+}
+
 /* Nav centrada + separador debajo de los enlaces */
 .nav {
-    width: 100%;
-    display: flex;
-    justify-content: flex-end;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    gap:.75rem;
+    flex-wrap:wrap;
 }
 
 /* Estilo de links del nav (botones) */

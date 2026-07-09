@@ -28,20 +28,31 @@
   <body>
   <div class="container">
     <header class="header">
-      <h1 class="titulo-marca">El sabor que reúne a la familia</h1>
 
-      <p class="subtitulo">
-        🍓 Elige tus sabores favoritos 👇
-      </p>
-
-      <nav class="nav">
-        <a href="#bolis-agua-titulo">Bolis de agua 🧊</a>
-        <a href="#bolis-leche-titulo">Bolis de leche 🐄</a>
-        <a href="{% url 'cart_detail' %}">
-          🛒 Carrito ({{ cart_count }})
+    <!-- Carrito -->
+    <div class="header-top">
+        <a href="{% url 'cart_detail' %}" class="carrito-btn">
+            🛒 Carrito ({{ cart_count }})
         </a>
-      </nav>
-    </header>
+    </div>
+
+    <!-- Título -->
+    <h1 class="titulo-marca">
+        El sabor que reúne a la familia
+    </h1>
+
+    <!-- Subtítulo -->
+    <p class="subtitulo">
+        🍓 Elige tus sabores favoritos 👇
+    </p>
+
+    <!-- Categorías -->
+    <nav class="nav">
+        <a href="#bolis-agua-titulo">🧊 Bolis de agua</a>
+        <a href="#bolis-leche-titulo">🐄 Bolis de leche</a>
+    </nav>
+
+</header>
 
       <main>
         <!-- ===================== -->
