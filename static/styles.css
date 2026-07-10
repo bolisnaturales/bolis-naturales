@@ -984,9 +984,8 @@ html, body {
 }
 
 .horarios-footer {
-    margin-top: 0;
-    margin-bottom: 20px;
-    padding-top: 0;
+    margin: 0 !important;
+    padding: 0 0 20px;
     text-align: center;
 }
 
