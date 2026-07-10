@@ -982,3 +982,21 @@ html, body {
 
     white-space:nowrap;
 }
+
+.horarios-footer {
+    margin: 50px 0 30px;
+    text-align: center;
+}
+
+.horarios-footer p {
+    font-size: 1rem;
+    line-height: 1.8;
+    color: #333;
+}
+
+.horarios-footer strong {
+    display: block;
+    font-size: 1.2rem;
+    margin-bottom: 8px;
+    color: #111;
+}
