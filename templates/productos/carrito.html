@@ -12,27 +12,21 @@
       <header class="cart-header">
         <h1 class="titulo-marca">Carrito</h1>
         <nav class="cart-nav">
-  <a href="{% url 'catalogo' %}" class="btn btn-seguir">
-    ← Elegir más sabores
-  </a>
+          <a href="{% url 'catalogo' %}" class="btn btn-seguir">
+            ← Elegir más sabores
+          </a>
 
-  <a href="{% url 'checkout' %}" class="btn btn-confirmar">
-    Confirmar pedido →
-  </a>
-</nav>
+          <a href="{% url 'checkout' %}" class="btn btn-confirmar">
+            Confirmar pedido →
+          </a>
+        </nav>
       </header>
 
       <main>
-      <main>
-
-  {% if cart_msg %}
-  <p class="cart-warning">
-    {{ cart_msg }}
-  </p>
-  {% endif %}
-
-  {% if items %}
-  <div class="breakfast-grid">
+        {% if cart_msg %}
+        <p class="cart-warning">{{ cart_msg }}</p>
+        {% endif %} {% if items %}
+        <div class="breakfast-grid">
           {% for it in items %}
           <article>
             <h3>{{ it.producto.nombre }}</h3>
@@ -111,10 +105,10 @@
         {% else %}
         <p>Tu carrito está vacío.</p>
         <p>
-  <a href="{% url 'catalogo' %}" class="boton-volver">
-  ← Volver al menu
-</a>
-</p> 
+          <a href="{% url 'catalogo' %}" class="boton-volver">
+            ← Volver al menu
+          </a>
+        </p>
         {% endif %}
       </main>
     </div>
