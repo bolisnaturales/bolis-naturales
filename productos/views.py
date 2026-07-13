@@ -106,8 +106,8 @@ def catalogo(request):
     leche = _filter_by_categoria("Leche")
 
     horarios = {
-        "lv": "12:00 pm a 2:00 pm",
-        "sd": "2:00 pm a 4:00 pm",
+        "lv": "PRUEBA 123",
+        "sd": "TEST",
     }
 
     return render(request, "productos/catalogo.html", {
