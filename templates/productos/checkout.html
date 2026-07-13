@@ -48,10 +48,11 @@
         <h2>Ingresa tus datos</h2>
 
         <p>
-          <strong>Horarios de reparto:</strong><br />
-          {{ horarios.lv }}<br />
-          {{ horarios.sd }}
+          <strong>Horarios de reparto:</strong>
         </p>
+
+        <p>Lunes a viernes: {{ horarios.lv }}</p>
+        <p>Sábado y domingo: {{ horarios.sd }}</p>
 
         <!-- ✅ id para que el botón del header lo pueda enviar -->
         <form id="form-pedido" method="post">
