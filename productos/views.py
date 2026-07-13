@@ -106,8 +106,8 @@ def catalogo(request):
     leche = _filter_by_categoria("Leche")
 
     horarios = {
-        "lv": "PRUEBA 123",
-        "sd": "TEST",
+        "lv": "12:00 pm a 2:00 pm",
+        "sd": "2:00 pm a 4:00 pm",
     }
 
     return render(request, "productos/catalogo.html", {
@@ -257,8 +257,8 @@ def checkout(request):
     total = subtotal + envio
 
     horarios = {
-    "lv": "PRUEBA 123",
-    "sd": "TEST",
+    "lv": "12:00 pm a 2:00 pm",
+    "sd": "2:00 pm a 4:00 pm",
 }
 
     if request.method == "POST":

@@ -24,35 +24,27 @@
   </head>
 
   <body>
-    <body>
-  <body>
-  <div class="container">
-    <header class="header">
-
-    <!-- Carrito -->
-    <div class="header-top">
-        <a href="{% url 'cart_detail' %}" class="carrito-btn">
+    <div class="container">
+      <header class="header">
+        <!-- Carrito -->
+        <div class="header-top">
+          <a href="{% url 'cart_detail' %}" class="carrito-btn">
             🛒 ({{ cart_count }})
-        </a>
-    </div>
+          </a>
+        </div>
 
-    <!-- Título -->
-    <h1 class="titulo-marca">
-        El sabor que reúne a la familia
-    </h1>
+        <!-- Título -->
+        <h1 class="titulo-marca">El sabor que reúne a la familia</h1>
 
-    <!-- Subtítulo -->
-    <p class="subtitulo">
-        🍓 Elige tus sabores favoritos 👇
-    </p>
+        <!-- Subtítulo -->
+        <p class="subtitulo">🍓 Elige tus sabores favoritos 👇</p>
 
-    <!-- Categorías -->
-    <nav class="nav">
-        <a href="#bolis-agua-titulo">🧊 Bolis de agua</a>
-        <a href="#bolis-leche-titulo">🐄 Bolis de leche</a>
-    </nav>
-
-</header>
+        <!-- Categorías -->
+        <nav class="nav">
+          <a href="#bolis-agua-titulo">🧊 Bolis de agua</a>
+          <a href="#bolis-leche-titulo">🐄 Bolis de leche</a>
+        </nav>
+      </header>
 
       <main>
         <!-- ===================== -->
@@ -201,12 +193,12 @@
       </main>
     </div>
     <section class="horarios-footer">
-  <p>
-    <strong>Horarios de reparto:</strong><br>
-    Lunes a viernes: {{ horarios.lv }}<br>
-    Sábado y domingo: {{ horarios.sd }}
-  </p>
-</section>
+      <p>
+        <strong>Horarios de reparto:</strong><br />
+        Lunes a viernes: {{ horarios.lv }}<br />
+        Sábado y domingo: {{ horarios.sd }}
+      </p>
+    </section>
     <a
       href="https://wa.me/12098097311?text=Hola%2C%20visité%20la%20página%20de%20bolis%20y%20quiero%20información"
       class="whatsapp-float"
