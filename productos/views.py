@@ -257,7 +257,7 @@ def checkout(request):
     total = subtotal + envio
 
     horarios = {
-    "lv": "Lunes a viernes: 4:00 pm a 6:30 pm",
+    "lv": "Lunes a viernes: 12:00 pm a 2:00 pm",
     "sd": "Sábado y domingo: 2:00 pm a 4:00 pm",
 }
 
