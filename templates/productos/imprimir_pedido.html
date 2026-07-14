@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Pedido #{{ pedido.id }}</title>
+
+    <style>
+      body {
+        font-family: Arial, Helvetica, sans-serif;
+        max-width: 700px;
+        margin: 40px auto;
+        padding: 20px;
+      }
+
+      h1 {
+        margin-bottom: 5px;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+      }
+
+      th,
+      td {
+        border: 1px solid #ccc;
+        padding: 8px;
+        text-align: left;
+      }
+
+      th {
+        background: #f5f5f5;
+      }
+
+      .total {
+        text-align: right;
+        margin-top: 20px;
+        font-size: 20px;
+        font-weight: bold;
+      }
+
+      @media print {
+        button {
+          display: none;
+        }
+
+        body {
+          margin: 0;
+        }
+      }
+    </style>
+  </head>
+
+  <body>
+    <button onclick="window.print()">🖨 Imprimir</button>
+
+    <h1>Bolis Naturales</h1>
+
+    <h2>Pedido #{{ pedido.id }}</h2>
+
+    <p><strong>Cliente:</strong> {{ pedido.nombre }}</p>
+
+    <p><strong>Teléfono:</strong> {{ pedido.telefono }}</p>
+
+    <p><strong>Dirección:</strong> {{ pedido.direccion_envio }}</p>
+
+    <hr />
+
+    <table>
+      <tr>
+        <th>Producto</th>
+        <th>Cantidad</th>
+        <th>Subtotal</th>
+      </tr>
+
+      {% for item in items %}
+
+      <tr>
+        <td>{{ item.nombre_producto }}</td>
+        <td>{{ item.cantidad }}</td>
+        <td>${{ item.subtotal }}</td>
+      </tr>
+
+      {% endfor %}
+    </table>
+
+    <p class="total">
+      Subtotal: ${{ pedido.subtotal }}<br />
+
+      Envío: ${{ pedido.envio }}<br /><br />
+
+      TOTAL: ${{ pedido.total }}
+    </p>
+  </body>
+</html>

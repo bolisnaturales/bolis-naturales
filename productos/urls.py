@@ -7,6 +7,7 @@ from .views import (
     cart_update,
     checkout,
     pedido_detalle,
+    imprimir_pedido,
 )
 
 urlpatterns = [
@@ -19,6 +20,12 @@ urlpatterns = [
 
     path("checkout/", checkout, name="checkout"),
 
-    # ✅ ESTA ES LA QUE TE FALTA
     path("pedido/<int:pedido_id>/", pedido_detalle, name="pedido_detalle"),
+
+    # 👇 Agrega esta ruta
+    path(
+        "pedido/<int:pedido_id>/imprimir/",
+        imprimir_pedido,
+        name="imprimir_pedido",
+    ),
 ]

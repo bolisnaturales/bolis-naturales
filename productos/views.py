@@ -368,3 +368,16 @@ def pedido_detalle(request, pedido_id):
         "pedido": pedido,
         "items": items,
     })
+
+def imprimir_pedido(request, pedido_id):
+    pedido = get_object_or_404(Pedido, id=pedido_id)
+    items = pedido.items.all()
+
+    return render(
+        request,
+        "productos/imprimir_pedido.html",
+        {
+            "pedido": pedido,
+            "items": items,
+        },
+    )
