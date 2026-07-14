@@ -32,8 +32,8 @@ class PedidoAdmin(admin.ModelAdmin):
         "id",
         "nombre",
         "boton_imprimir",
-        "telefono",
         "estado",
+        "telefono",
         "total",
         "creado_en",
     )
