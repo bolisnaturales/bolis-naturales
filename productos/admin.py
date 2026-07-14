@@ -31,11 +31,11 @@ class PedidoAdmin(admin.ModelAdmin):
     list_display = (
         "id",
         "nombre",
+        "boton_imprimir",
         "telefono",
         "estado",
         "total",
         "creado_en",
-        "boton_imprimir",
     )
     list_filter = ("estado", "creado_en")
     search_fields = ("nombre", "telefono", "direccion_envio")
