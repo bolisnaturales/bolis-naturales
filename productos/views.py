@@ -107,7 +107,7 @@ def catalogo(request):
 
     horarios = {
         "lv": "12:00 pm a 2:00 pm",
-        "sd": "2:00 pm a 4:00 pm",
+        "sd": "1:00 pm a 3:00 pm",
     }
 
     return render(request, "productos/catalogo.html", {
